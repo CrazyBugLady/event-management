@@ -4,7 +4,7 @@
 
 	$User = \EventManager\UserAuthenticator::getLoggedInUser();
 	
-	$LoginForm = \EventManager\UserAuthenticator::getLoginForm(array(), array(), array());
+	$LoginForm = \EventManager\UserAuthenticator::getLoginForm("Login", "benutzer", array("ID", "erstelldatum"), array(), array());
 ?>
 	<h1>Join da' partey</h1>
 <?php
@@ -26,7 +26,7 @@
 		}
 		else
 		{
-			$LoginForm->buildForm();
+			$LoginForm->createForm("index.php?site=login");
 			?>
 				<div class="panel panel-danger">
 					<div class="panel-heading">
@@ -42,6 +42,6 @@
 	}
 	else
 	{
-		\EventManager\UserAuthenticator::buildForm();
+		$LoginForm->createForm("index.php?site=login");
 	}
 ?>

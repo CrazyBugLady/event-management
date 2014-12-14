@@ -52,6 +52,37 @@
 			}
 		}
 	}	
+	else if($option == "delete")
+	{
+		if(\EventManager\PricegroupsManager::delete($_REQUEST["id"]))
+		{
+				?>
+					<div class="panel panel-success">
+						<div class="panel-heading">
+							Preisgruppe löschen erfolgreich
+						</div>
+			
+						<div class="panel-body">
+							Die Preisgruppe konnte erfolgreich gelöscht werden.<br>
+						</div>
+					</div>
+				<?php
+		}
+		else
+		{
+			?>
+				<div class="panel panel-danger">
+					<div class="panel-heading">
+							Preisgruppe löschen nicht erfolgreich
+						</div>
+			
+						<div class="panel-body">
+							Die Preisgruppe konnte nicht gelöscht werden.<br>
+						</div>
+					</div>
+				<?php
+		}
+	}
     else
 	{	
 		\EventManager\PricegroupsManager::showPricegroupsSite($User != "", $option, $id);		

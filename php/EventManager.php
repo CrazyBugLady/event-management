@@ -31,18 +31,24 @@
 			echo "<h2>". self::$Title ."</h2>";
 			echo "<h3>Events (". self::countAllEvents($Filter) .")</h3>";
 		
-			self::setPaging(sizeof($allEvents), $Page);
+			self::setPaging(sizeof($allEvents), $Page, $archive);
 					
 			self::showFilterGenre($Page, $archive);		
 					
 			if($loggedInUser != "")
 			{
-				echo "<p><a href='index.php?site=sign'>You want to make a new Event?</a></p>" . PHP_EOL;
+				echo "<p><a href='#' data-toggle='modal' data-target='#confirm-create-event'>You want to make a new Event?</a></p>" . PHP_EOL;
 			}
 			
 			foreach($EventsCurrentPage as $Event)
 			{
 				echo "<table class='table table-striped'>" . PHP_EOL;
+				echo "<tr>". PHP_EOL;
+				echo "<td colspan='2'><a href='Resources/Images/". $Event->PicturePath ."' class='thumbnailpicture'><img class='img-thumbnail' src='Resources/Images/" . $Event->PicturePath . "'></td>". PHP_EOL;
+				echo "</tr>". PHP_EOL;
+				echo "<tr>". PHP_EOL;
+				echo "<td colspan='2'>" . $Event->PictureDescription . "</td>". PHP_EOL;
+				echo "</tr>". PHP_EOL;
 				echo "<tr>". PHP_EOL;
 				echo "<th colspan='2'>Title: " . $Event->Name. "</th>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
@@ -57,31 +63,45 @@
 				echo "<th colspan='2'>Vorstellungstermine</th>" . PHP_EOL;
 				echo "</tr>" . PHP_EOL;
 				
-				echo "<tr>" . PHP_EOL;
-	
 				$PresentationData = $Event->getPresentationData();
 				foreach($PresentationData as $PresentationDate)
 				{
+					echo "<tr>" . PHP_EOL;
 					echo "<td>" . $PresentationDate->PresentationDate . "</td>" . PHP_EOL;
 					echo "<td>" . $PresentationDate->PresentationTime . "</td>" . PHP_EOL;
+					echo "</tr>" . PHP_EOL;
 				}
 				
+				echo "<tr>" . PHP_EOL;
+				echo "<th colspan='2'>Links</th>" . PHP_EOL;
+				echo "</tr>" . PHP_EOL;
+				
+				echo "<tr>" . PHP_EOL;
+				echo "<td colspan='2'><ul>" . PHP_EOL;
+				$Links = $Event->getLinks();
+				foreach($Links as $Link)
+				{
+					
+					echo "<li><a href='" . $Link->Link . "'>". $Link->Name ."</a></li>" . PHP_EOL;
+					
+				}
+				
+				echo "</td></ul>" . PHP_EOL;
 				echo "</tr>" . PHP_EOL;
 				
 				echo "<tr>" . PHP_EOL;
 				echo "<th colspan='2'>Preisgruppen</th>" . PHP_EOL;
 				echo "</tr>" . PHP_EOL;
-				
-				echo "<tr>" . PHP_EOL;
 	
 				$Pricegroups = $Event->getPricegroups();
+				
 				foreach($Pricegroups as $Pricegroup)
 				{
-					echo "<td>" . $Pricegroup->getName() . "</td>" . PHP_EOL;
-					echo "<td>" . $Pricegroup->getPrice() . "</td>" . PHP_EOL;
+					echo "<tr>" . PHP_EOL;
+					echo "<td>" . $Pricegroup->Name . "</td>" .PHP_EOL;
+					echo "<td>". $Pricegroup->Price ."</td>" . PHP_EOL;
+					echo "</tr>" . PHP_EOL;
 				}
-				
-				echo "</tr>" . PHP_EOL;
 				
 				if($Event->hasBeenModified())
 				{
@@ -119,15 +139,20 @@
 										
 							 events: [
 								<?php
-									foreach($PresentationData as $PresentationDate)
+								
+									foreach($PresentationData as $key => $PresentationDate)
 									{
 										echo "{";
 										echo "id: '". $PresentationDate->idPresentationDate ."',";
 										echo "title: '". $Event->Name ."'," . PHP_EOL;
 										echo "start: '" . $PresentationDate->PresentationDate."'," . PHP_EOL;
-										echo "allday: false, " .PHP_EOL;
-										echo "description: 'duration: " . $Event->Duration ."h'". PHP_EOL;
+										echo "allday: false " .PHP_EOL;
 										echo "}";
+										
+										if(count($PresentationData) > $key)
+										{
+											echo ",";
+										}
 									}
 								?>
 							],
@@ -158,7 +183,7 @@
 			$PresentationForm->createForm("index.php?site=presentation?id=" . $Event->idEvent);
 		}
 		
-		public static function setPaging($Events, $currentPage)
+		public static function setPaging($Events, $currentPage, $archive)
 		{
 			$SiteAmount = ceil($Events / self::$perSite);
 			
@@ -167,7 +192,8 @@
 			for ($Page = 1; $Page <= $SiteAmount; $Page++)
 			{
 				$ActiveAttribute = ($Page == $currentPage) ? "class='active'" : "";
-				echo "<li ". $ActiveAttribute ."><a href='index.php?site=show&page=". $Page ."'>". $Page ."</a></li>" . PHP_EOL; 
+				$site = $archive == true ? "archive" : "show";
+				echo "<li ". $ActiveAttribute ."><a href='index.php?site=".$site ."&page=". $Page ."'>". $Page ."</a></li>" . PHP_EOL; 
 			}
 			
 			echo "</ul>" . PHP_EOL;
@@ -177,30 +203,53 @@
 		{
 			$options = "";
 			$options .= "<a data-toggle='tooltip' data-original-title='edit event' href='#'><span class='glyphicon glyphicon-pencil'></span></a>";
-			$options .= "<a href='#' data-href='index.php?site=start' data-toggle='modal' data-target='#confirm-delete'><span data-toggle='tooltip' title='delete event and dependencies' class='glyphicon glyphicon-trash'></span></a>";
+			$options .= "<a href='#' data-href='index.php?site=delete&id=" . $idEvent . "' data-toggle='modal' data-target='#confirm-delete'><span data-toggle='tooltip' title='delete event and dependencies' class='glyphicon glyphicon-trash'></span></a>";
 			$options .= "<a data-toggle='tooltip' data-original-title='watch the presentation data' href='index.php?site=presentation&id=". $idEvent ."'><span class='glyphicon glyphicon-calendar'></span></a>";
-			
 			$options .= "<a data-toggle='tooltip' data-original-title='watch the prices' href='#'><span class='glyphicon glyphicon-usd'></span></a>";
+			$options .= "<a data-toggle='tooltip' data-original-title='edit the image' href='index.php?site=image&id=". $idEvent ."'><span class='glyphicon glyphicon-picture'></span</a>";
 			
 			return $options;
 		}
 		
-		public static function showFilterGenre($Page, $archive)
+		public static function getGenreDropdown($filter)
 		{
 			$Genres = \EventManager\Models\GenreDbModel::readAll();
-			
 			?>
-			<form method="post" action="index.php?site=show&page=<?php echo $Page; ?>">
-				<select class="form-control" name="selectedgenre">
-					<option value='0'>-- All -- </option>
-			<?php	
-			foreach($Genres as $Genre)
+			<select class="form-control" name="selectedgenre">
+			<?php
+			if($filter)
 			{
-				echo "<option value=". $Genre->getId() .">". $Genre->getName() ."</option>" . PHP_EOL;	
-			}	
 			?>
-				</select>
-				
+				<option value='0'>-- All -- </option>
+			<?php
+				}
+				foreach($Genres as $Genre)
+				{
+					echo "<option value=". $Genre->getId() .">". $Genre->getName() ."</option>" . PHP_EOL;	
+				}	
+			?>
+			</select>
+			<?php
+		}
+			
+		
+		public static function showFilterGenre($Page, $archive)
+		{
+			$link = "index.php?site=";
+			
+			if($archive)
+			{
+				$link .= "archive&page=" . $Page;
+			}
+			else
+			{
+				$link .= "show&page=" . $Page;
+			}
+			?>
+			<form method="post" action="<?php echo $link; ?>">
+				<?php
+					self::getGenreDropdown(true);
+				?>
 				<input class='btn btn-default' type='submit' name='submit' value='Filtern'>
 			</form>
 			<?php
@@ -242,5 +291,20 @@
 			return $createSuccessfull;
 		}
 
+		public static function delete($idEvent)
+		{
+			$Event = new \EventManager\BusinessObjects\Event($idEvent, "", "", "", "", "", "", "", "", "");
+			$deleteSuccessfull = $Event->delete();
+			
+			return $deleteSuccessfull;
+		}
+		
+		public static function update($Event)
+		{
+			$updateSuccessfull = $Event->update();
+			
+			return $updateSuccessfull;
+		}
+		
 	}
 ?>

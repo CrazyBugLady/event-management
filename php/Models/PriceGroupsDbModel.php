@@ -81,9 +81,17 @@
 			return $successCreate;
 		}
 		
-		public function delete()
+		public function delete($pricegroup)
 		{
-			// wird in diesem Fall nicht unterstützt
+			self::$DB = \EventManager\Data\DB::getConnection("delete", "Resources/Configuration/config.ini");
+			$stmt = self::$DB->prepare("DELETE FROM Preisgruppe WHERE ID = ?");
+			$stmt->bind_param("i", 
+							  $pricegroup->getId());
+			$successDelete = $stmt->execute();
+			
+			self::$DB->close();
+			
+			return $successDelete;
 		}
 		
 		public function update($Pricegroup)

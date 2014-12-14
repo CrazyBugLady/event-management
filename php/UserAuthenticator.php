@@ -134,9 +134,9 @@
 			
 		}*/
 		
-		public static function getLogin($except, $repeat, $placeholders)
+		public static function getLoginForm($title, $datatable, $except, $repeat, $placeholders)
 		{
-			$LoginForm = new \FormularGenerator\formulargenerator("Login", "benutzer", $except, $repeat, $placeholders, false);
+			$LoginForm = new \FormularGenerator\formulargenerator($title, $datatable, $except, $repeat, $placeholders, false);
 			return $LoginForm;
 		}
 	

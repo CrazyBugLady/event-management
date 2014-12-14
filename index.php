@@ -1,5 +1,5 @@
 <?php
-	require("php\FormularCreator/formulargenerator.class.php");
+	require_once("php\FormularCreator/formulargenerator.class.php");
 	require_once("php\UserAuthenticator.php");
 	require_once("php\EventManager.php");
 	
@@ -16,7 +16,7 @@
 
 	<link href="Resources/css/bootstrap.css" rel="stylesheet">
     <link href="Resources/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="Resources/css/custom.css" rel="stylesheet">
+	<link rel="stylesheet" href="Resources/css/custom.css">
 	<link rel='stylesheet' href='Resources/fullcalendar/fullcalendar.css' />
 	
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -54,23 +54,7 @@
   
 		<div class="container">
 			<?php
-			
-						echo "<div class='modal fade' id='confirm-delete' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>" . PHP_EOL .
-						"<div class='modal-dialog'>" . PHP_EOL . 
-							"<div class='modal-content'>" . PHP_EOL .
-								"<div class='modal-header'>" . PHP_EOL .
-									"Löschung" . PHP_EOL .
-								"</div>" . PHP_EOL .
-								"<div class='modal-body'>" . PHP_EOL .
-									"Willst du die angeforderte Löschung wirklich bestätigen? (Achtung: kann NICHT rückgängig gemacht werden!)" . PHP_EOL .
-								"</div>" . PHP_EOL .
-								"<div class='modal-footer'>" . PHP_EOL .
-									"<button type='button' class='btn btn-default' data-dismiss='modal'>Cancel</button>" . PHP_EOL .
-										"<a href='#' class='btn btn-danger danger'>Delete</a>" . PHP_EOL .
-								"</div>" . PHP_EOL . 
-							"</div>" . PHP_EOL .
-						"</div>" . PHP_EOL .
-					   "</div>";
+				include_once("php/inc/modals.inc.php");
 			?>
 			
 			<div id="calendar">
@@ -104,11 +88,26 @@
 					case "presentation":
 						include_once("php/sites/PresentationData.php");
 						break;
+					case "image":
+						include_once("php/sites/editEventImage.php");
+						break;
+					case "sign":
+						include_once("php/sites/makeEvent.php");
+						break;
+					case "delete":
+						include_once("php/sites/deleteEvent.php");
+						break;
 					case "genres":
 						include_once("php/sites/ShowGenres.php");
 						break;
+					case "pricegroups":
+						include_once("php/sites/ShowPriceGroups.php");
+						break;
 					case "logout":
 						include_once("php/sites/LogOut.php");
+						break;
+					case "archive":
+						include_once("php/sites/showArchive.php");
 						break;
 				}
 			}

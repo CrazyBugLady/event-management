@@ -44,5 +44,12 @@
 			
 			return $createSuccessfull;
 		}
+		
+		public function delete()
+		{
+			$deleteSuccessfull = \EventManager\Models\PricegroupsDbModel::delete($this);
+			
+			return $deleteSuccessfull;
+		}
 	}
 ?>

@@ -51,6 +51,37 @@
 			}
 		}
 	}	
+	else if($option == "delete")
+	{
+		if(\EventManager\GenresManager::delete($_REQUEST["id"]))
+		{
+				?>
+					<div class="panel panel-success">
+						<div class="panel-heading">
+							Genre löschen erfolgreich
+						</div>
+			
+						<div class="panel-body">
+							Das Genre konnte erfolgreich gelöscht werden.<br>
+						</div>
+					</div>
+				<?php
+		}
+		else
+		{
+			?>
+				<div class="panel panel-danger">
+					<div class="panel-heading">
+							Genre löschen nicht erfolgreich
+						</div>
+			
+						<div class="panel-body">
+							Das Genre konnte nicht gelöscht werden.<br>
+						</div>
+					</div>
+				<?php
+		}
+	}
     else
 	{	
 		\EventManager\GenresManager::showGenreSite($User != "", $option, $id);

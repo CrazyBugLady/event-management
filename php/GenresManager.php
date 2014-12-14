@@ -69,7 +69,8 @@
 					if($idEdit == $idCurrent)
 					{
 						$EditForm = "<form method='post' action='index.php?site=genres&option=editsave&id=" . $idEdit . "'>" .
-									"<input type='text' name='txtName' value='". $NameCurrent ."'> <input type='submit' class='btn btn-success' value='Ändern'>" .
+									"<input type='text' name='txtName' class='form-control' value='". $NameCurrent ."'> <input type='submit' class='btn btn-success' value='Ändern'>" .
+									"<a href='index.php?site=genres' class='btn btn-danger'>Cancel</a>" . 
 								"</form>";
 								$Form = $EditForm;
 					}
@@ -103,7 +104,7 @@
 		public static function setOptions($idGenre)
 		{
 			$Options = 	"<a data-toggle='tooltip' data-original-title='edit genre' href='index.php?site=genres&option=edit&id=" . $idGenre . "'><span class='glyphicon glyphicon-pencil'></span></a>" .
-						"<a data-href='index.php?site=genres&option=delete&id=".$idGenre."' data-toggle='modal' data-target='#confirm-delete' href='#'><span data-toggle='tooltip' data-original-title='delete genre' class='glyphicon glyphicon-trash'></span></a>";
+						"<a href='#' data-href='index.php?site=genres&option=delete&id=".$idGenre."' data-toggle='modal' data-target='#confirm-delete'><span data-toggle='tooltip' data-original-title='delete genre' class='glyphicon glyphicon-trash'></span></a>";
 			
 			return $Options;
 		}
@@ -124,7 +125,7 @@
 		
 		public static function delete($id)
 		{
-			$Genre = new \EventManager\BusinessObject\Genre($id, "");
+			$Genre = new \EventManager\BusinessObjects\Genre($id, "");
 			$deleteSuccessfull = $Genre->delete();
 			
 			return $deleteSuccessfull;

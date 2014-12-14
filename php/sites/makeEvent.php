@@ -20,13 +20,13 @@
 		$Dauer = $_REQUEST["tbdauer"];
 	}
 	
-	if(array_key_exists("idGenre", $_REQUEST))
+	if(array_key_exists("selectedgenre", $_REQUEST))
 	{
-		$idGenre = $_REQUEST["idGenre"];
+		$idGenre = $_REQUEST["selectedgenre"];
 	}
 	
 	$EventForm = \EventManager\EventManager::getEventForm("Veranstaltung erstellen", "veranstaltung", array("ID", "idGenre", "bearbeitungsdatum", "erstelldatum", "bild", "bildbeschreibung"), array(), array($Name, $Besetzung, $Beschreibung, $Dauer));
-	$EventForm->createForm("index.php?site=sign&idGenre=" . $idGenre);
+	$EventForm->createForm("index.php?site=sign&selectedgenre=" . $idGenre);
 	
 	echo "<a href='index.php?site=show'>Zurück zur Eventübersicht</a>";
 	
@@ -74,7 +74,7 @@
 					
 					<div>
 						<?php 
-							$EntryForm->showValidationResult(array($Name, $Besetzung, $Beschreibung, $Dauer));
+							echo $EventForm->showValidationResult(array($Name, $Besetzung, $Beschreibung, $Dauer));
 						?>
 					</div>
 				</div>

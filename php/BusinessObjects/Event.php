@@ -6,6 +6,7 @@
 	require_once("php/Models/GenreDbModel.php");
 	require_once("php/Models/PricegroupsDbModel.php");
 	require_once("php/Models/PresentationDbModel.php");
+	require_once("php/Models/LinkDbModel.php");
 	require_once("php/BusinessObjects/PresentationDate.php");
 
 	class Event
@@ -71,19 +72,11 @@
 			return $pricegroups;
 		}
 		
-		public function isStillActive()
+		public function getLinks()
 		{
-			$tempPresentationData = getPresentationData();
+			$links = \EventManager\Models\LinkDbModel::readAll($this->idEvent);
 			
-			$lastPresentationDate = strtotime($tempPresentationData[sizeof($tempPresentationData) - 1]);
-			$currentDate = time();
-			
-			if($lastPresentationDate >= $currentDate)
-			{
-				return true;
-			}
-			
-			return false;
+			return $links;
 		}
 		
 		public function create()

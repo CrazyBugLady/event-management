@@ -68,18 +68,26 @@
 			return $successCreate;
 		}
 		
-		public function delete()
+		public function delete($genre)
 		{
-			// wird in diesem Fall nicht unterstützt
+			self::$DB = \EventManager\Data\DB::getConnection("delete", "Resources/Configuration/config.ini");
+			$stmt = self::$DB->prepare("DELETE FROM genre WHERE ID = ?");
+			$stmt->bind_param("i", 
+							  $genre->getId());
+			$successCreate = $stmt->execute();
+			
+			self::$DB->close();
+			
+			return $successCreate;
 		}
 		
-		public function update($Genre)
+		public function update($genre)
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("edit", "Resources/Configuration/config.ini");
 
 			$stmt = self::$DB->prepare("UPDATE genre SET name = ? WHERE ID = ?");
 								
-			$stmt->bind_param("si", $Genre->Name, $Genre->idGenre);
+			$stmt->bind_param("si", $genre->Name, $genre->idGenre);
 			
 			$successUpdate = $stmt->execute();
 			
