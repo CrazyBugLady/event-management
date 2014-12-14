@@ -4,6 +4,7 @@
 	require_once("php/Models/UserDbModel.php");
 	require_once("php/Models/EventDbModel.php");
 	require_once("php/Models/GenreDbModel.php");
+	require_once("php/Models/PricegroupsDbModel.php");
 	require_once("php/Models/PresentationDbModel.php");
 	require_once("php/BusinessObjects/PresentationDate.php");
 
@@ -57,9 +58,17 @@
 		
 		public function getPresentationData()
 		{
-			$presentationData = \EventManager\Models\PresentationDbModel::read($this->idEvent);
+		
+			$presentationData = \EventManager\Models\PresentationDbModel::readAll($this->idEvent);
 			
 			return $presentationData;
+		}
+		
+		public function getPricegroups()
+		{
+			$pricegroups = \EventManager\Models\PricegroupsDbModel::readAll($this->idEvent);
+			
+			return $pricegroups;
 		}
 		
 		public function isStillActive()

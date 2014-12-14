@@ -14,5 +14,6 @@
 			const NumericField = 6;
 			const DataField = 7;
 			const Email = 8;
+			const TimeField = 9;
 		}
   ?>

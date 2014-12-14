@@ -68,15 +68,7 @@
 		
 		public static function create($user)
 		{
-			self::$DB = \EventManager\Data\DB::getConnection("insert", "Resources/Configuration/config.ini");
-			$stmt = self::$DB->prepare("INSERT INTO benutzer (benutzername, passwort) VALUES (?, ?)");
-			$stmt->bind_param("ss", 
-							  $user->Nickname, $user->Password);
-			$successCreate = $stmt->execute();
-			
-			self::$DB->close();
-			
-			return $successCreate;
+			// wird in diesem Fall nicht benötigt
 		}
 		
 		public static function update($user)

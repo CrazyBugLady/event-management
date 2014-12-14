@@ -26,7 +26,7 @@
 		
 		public function __construct($titel, $datatable, $except, $repeat, $placeholderValues, $showCaptcha)
 		{
-			$DBTest = new \Guestbook\Data\DB();
+			$DBTest = new \EventManager\Data\DB();
 			$this->DB = $DBTest::getConnection("read", "Resources/Configuration/config.ini");
 			$this->titel = $titel;
 			$this->datatable = $datatable;
@@ -39,7 +39,7 @@
 		
 		public function createForm($Action)
 		{
-			echo "<h2>".$this->titel."</h2>";
+			echo "<h3>".$this->titel."</h3>";
 			echo "<form method='post' action='". $Action ."' class='form-horizontal' role='form'>";
 			
 			$FormFields = $this->getAllFields();

@@ -32,11 +32,16 @@
 			return $Event;
 		}
 		
-		public static function readAll()
+		public static function readAll($filter)
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("read", "Resources/Configuration/config.ini");
 			
-			$SQL = "SELECT ID, name, besetzung, beschreibung, dauer, bild, bildbeschreibung, idGenre, bearbeitungsdatum, erstelldatum FROM veranstaltung";
+			$SQL = "SELECT distinct veranstaltung.ID, name, besetzung, beschreibung, dauer, bild, bildbeschreibung, idGenre, bearbeitungsdatum, erstelldatum FROM veranstaltung";
+
+			if($filter != null)
+			{
+				$SQL = $filter->addToSQL($SQL);
+			}
 			
 			$stmt = self::$DB->prepare($SQL);
 			
@@ -66,9 +71,9 @@
 			self::$DB = \EventManager\Data\DB::getConnection("insert", "Resources/Configuration/config.ini");
 			
 			$stmt = self::$DB->prepare("INSERT INTO veranstaltung" .
-									   " (Title, Comment, id_user)" .
-									   " VALUES (?, ?, ?)");
-			$stmt->bind_param("ssi", $Event->Title, $Event->Comment, $Event->idUser);
+									   " (name, besetzung, beschreibung, dauer, idGenre)" .
+									   " VALUES (?, ?, ?, ?, ?)");
+			$stmt->bind_param("ssssi", $Event->Name, $Event->Persons, $Event->Description, $Event->Duration, $Event->idGenre);
 			
 			$successCreate = $stmt->execute();
 			

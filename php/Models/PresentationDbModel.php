@@ -7,11 +7,11 @@
 	{
 		public static $DB;
 		
-		public function read($idEvent)
+		public function read($idPresentationData)
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("read", "Resources/Configuration/config.ini");
 		
-			$stmt = self::$DB->prepare("SELECT ID, datum, zeit, idVeranstaltung FROM vorstellung WHERE idVeranstaltung = ?");
+			$stmt = self::$DB->prepare("SELECT ID, datum, zeit, idVeranstaltung FROM vorstellung WHERE ID = ?");
 			$stmt->bind_param("i", $idEvent);
 			
 			$presentationData = "";
@@ -20,17 +20,19 @@
 				$result = $stmt->get_result();
 				$row = $result->fetch_assoc();
 				
-				$presentationData = new \EventManager\BusinessObjects\PresentationDate($row["id"], $row["idVeranstaltung"], $row["zeit"], $row["datum"]);
+				$presentationData = new \EventManager\BusinessObjects\PresentationDate($row["ID"], $row["zeit"], $row["datum"], $row["idVeranstaltung"]);
 			}
 			
 			return $presentationData;
 		}
 		
-		public function readAll()
+		public function readAll($idEvent)
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("read", "Resources/Configuration/config.ini");
 		
-			$stmt = self::$DB->prepare("SELECT ID, datum, zeit, idVeranstaltung FROM vorstellung");
+			$stmt = self::$DB->prepare("SELECT ID, datum, zeit, idVeranstaltung FROM vorstellung WHERE idVeranstaltung = ?");
+			
+			$stmt->bind_param("i", $idEvent);
 			
 			$presentationData = array();
 			
@@ -42,8 +44,7 @@
 					while ($row = $result->fetch_assoc()) {
 						$i++;
 					
-						$presentationDate = new \EventManager\BusinessObjects\PresentationDate($row["id"], $row["idVeranstaltung"], $row["zeit"], $row["datum"]);
-					
+						$presentationDate = new \EventManager\BusinessObjects\PresentationDate($row["ID"], $row["zeit"], $row["datum"], $row["idVeranstaltung"]);
 						$presentationData[$i] = $presentationDate;
 				}
 			}

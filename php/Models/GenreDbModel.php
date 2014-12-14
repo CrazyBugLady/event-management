@@ -32,7 +32,7 @@
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("read", "Resources/Configuration/config.ini");
 		
-			$stmt = self::$DB->prepare("SELECT ID, name FROM genre");
+			$stmt = self::$DB->prepare("SELECT ID, name FROM genre order by name desc");
 			
 			$genres = array();
 			
@@ -55,9 +55,17 @@
 			return $genres;
 		}
 		
-		public function create()
+		public function create($genre)
 		{
-			// wird in diesem Fall nicht unterstützt
+			self::$DB = \EventManager\Data\DB::getConnection("insert", "Resources/Configuration/config.ini");
+			$stmt = self::$DB->prepare("INSERT INTO genre (name) VALUES (?)");
+			$stmt->bind_param("s", 
+							  $genre->getName());
+			$successCreate = $stmt->execute();
+			
+			self::$DB->close();
+			
+			return $successCreate;
 		}
 		
 		public function delete()
@@ -65,12 +73,12 @@
 			// wird in diesem Fall nicht unterstützt
 		}
 		
-		public function update()
+		public function update($Genre)
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("edit", "Resources/Configuration/config.ini");
 
 			$stmt = self::$DB->prepare("UPDATE genre SET name = ? WHERE ID = ?");
-									   
+								
 			$stmt->bind_param("si", $Genre->Name, $Genre->idGenre);
 			
 			$successUpdate = $stmt->execute();

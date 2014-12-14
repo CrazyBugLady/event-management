@@ -72,8 +72,10 @@
 					return FieldTypes::NumericField;
 				case'text':
 					return FieldTypes::Textarea;
-				case 'date';
+				case 'date':
 					return FieldTypes::DataField;
+				case 'time':
+					return FieldTypes::TimeField;
 			}
 			return FieldTypes::Textfield;
 		}	
@@ -113,6 +115,12 @@
 			case FieldTypes::Textfield:
 			{
 				$Beginning = "<input type='text' class='form-control'  value='" . $this->FieldValue ."' name='tb" . $tempFieldName . "'";
+				break;
+			}
+			
+			case FieldTypes::TimeField:
+			{
+				$Beginning = "<input type='time' title='Zeitformat H:i:s' pattern='([01]?[0-9]{1}|2[0-3]{1}):[0-5]{1}[0-9]{1}' class='form-control'  value='" . $this->FieldValue ."' name='tb" . $tempFieldName . "'";
 				break;
 			}
 			
@@ -189,6 +197,12 @@
 	{
 		switch($this->FormFieldType)
 			{
+				case FieldTypes::TimeField:
+					if(!preg_match("^(([0-1][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?)$^", $this->FieldValue))
+					{
+						return errorCodes::ERR_FORMAT;
+					}
+					break;
 				case FieldTypes::NumericField:
 					if(!is_numeric($this->FieldValue))
 					{

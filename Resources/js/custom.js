@@ -7,12 +7,6 @@
 });
 
   $('#my-tab-content').tab();
-  
-	function showTextBox()//id)
-	{
-		//$("#" + id).fadeIn();
-		alert("Arschloch");
-	}
 
  })();
  

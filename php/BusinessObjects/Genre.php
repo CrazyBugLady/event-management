@@ -12,7 +12,7 @@
 		{
 			$this->idGenre = $idGenre;
 			$this->Name = $Name;
-		} 
+		}
 		
 		public function getName()
 		{
@@ -29,6 +29,20 @@
 			$updateSuccessfull = \EventManager\Models\GenreDbModel::update($this);
 			
 			return $updateSuccessfull;
+		}
+		
+		public function create()
+		{
+			$createSuccessfull = \EventManager\Models\GenreDbModel::create($this);
+			
+			return $createSuccessfull;
+		}
+		
+		public function delete()
+		{
+			$deleteSuccessfull = \EventManager\Models\GenreDbModel::delete($this);
+			
+			return $deleteSuccessfull;
 		}
 	}
 ?>

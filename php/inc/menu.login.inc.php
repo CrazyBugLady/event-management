@@ -1,6 +1,6 @@
 		<ul class="nav navbar-nav navbar-left">
-			<li><a href='index.php?site=register'>Registrieren</a></li>
-			<li><a href='index.php?site=show'>Entries</a></li>
+			<li><a href='index.php?site=show'>Show Events</a></li>
+			<li><a href='index.php?site=archive'>Show Event Archive</a></li>
 		</ul>
  
 		<ul class="nav navbar-nav navbar-right">

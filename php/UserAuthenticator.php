@@ -139,12 +139,6 @@
 			$LoginForm = new \FormularGenerator\formulargenerator("Login", "benutzer", $except, $repeat, $placeholders, false);
 			return $LoginForm;
 		}
-		
-	/*	public static function getRegistryForm($except, $repeat, $placeholders)
-		{
-			$RegisterForm = new \FormularGenerator\formulargenerator("Registrierungsformular", "users", $except, $repeat, $placeholders, false);
-			return $RegisterForm;
-		}*/
 	
 		public static function getLoggedInUser()
 		{

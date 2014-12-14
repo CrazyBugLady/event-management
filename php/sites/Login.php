@@ -1,11 +1,10 @@
 <?php
-	require_once("php/FormularCreator/formulargenerator.class.php");
 	require_once("php/Models/EventDbModel.php");
 	require_once("php/EventManager.php");
 
 	$User = \EventManager\UserAuthenticator::getLoggedInUser();
 	
-	$LoginForm = EventManager\UserAuthenticator::getLogin(array("ID", "erstelldatum"), array(""), array());
+	$LoginForm = \EventManager\UserAuthenticator::getLoginForm(array(), array(), array());
 ?>
 	<h1>Join da' partey</h1>
 <?php
@@ -20,15 +19,14 @@
 					</div>
 		
 					<div class="panel-body">
-						Du konntest dich erfolgreich einloggen. Zum <a href='index.php?site=show'>Gästebuch?</a><br>
+						Du konntest dich erfolgreich einloggen. Zur <a href='index.php?site=show'>Eventübersicht?</a><br>
 					</div>
 				</div>
 <?php
 		}
 		else
 		{
-			$LoginForm->createForm("index.php?site=login");
-			//echo "<a href='index.php?site=register'>Do you already have an account?</a><br>";
+			$LoginForm->buildForm();
 			?>
 				<div class="panel panel-danger">
 					<div class="panel-heading">
@@ -44,7 +42,6 @@
 	}
 	else
 	{
-		$LoginForm->createForm("index.php?site=login");
-		//echo "<a href='index.php?site=register'>Do you already have an account?</a><br>";
+		\EventManager\UserAuthenticator::buildForm();
 	}
 ?>

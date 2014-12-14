@@ -2,6 +2,7 @@
 	namespace EventManager;
 
 	require_once("Models/GenreDbModel.php");
+	require_once("Models/EventDbModel.php");
 	
 	class GenresManager
 	{	
@@ -56,6 +57,11 @@
 
 		public static function showEditForm($Option, $idEdit, $NameCurrent, $idCurrent)
 		{
+			if($idEdit != $idCurrent)
+			{
+				return $NameCurrent;
+			}
+		
 			switch($Option)
 			{
 				case "edit":
@@ -74,8 +80,8 @@
 					
 					return $Form;
 				case "editsave":
-					$Genre = new \EventManager\BusinessObjects\Genre($idEdit, $_POST["txtName"]);
-					
+					$Genre = new \EventManager\BusinessObjects\Genre($idEdit, $_REQUEST["txtName"]);
+						
 					$ResultPanel = "";
 					
 					if($Genre->update())
@@ -86,9 +92,8 @@
 					else
 					{
 						$ResultPanel = 	$NameCurrent .
-										"<div class='pnl pnl-danger'>Kein Erfolg beim Ändern.</div>"; 
+										"<div class='panel panel-danger'>Kein Erfolg beim Ändern.</div>"; 
 					}
-					
 					return $ResultPanel;
 				default:
 					return $NameCurrent;
@@ -98,14 +103,31 @@
 		public static function setOptions($idGenre)
 		{
 			$Options = 	"<a data-toggle='tooltip' data-original-title='edit genre' href='index.php?site=genres&option=edit&id=" . $idGenre . "'><span class='glyphicon glyphicon-pencil'></span></a>" .
-						"<a data-toggle='tooltip' data-original-title='delete event and dependencies' href='#'><span class='glyphicon glyphicon-trash'></span></a>";
+						"<a data-href='index.php?site=genres&option=delete&id=".$idGenre."' data-toggle='modal' data-target='#confirm-delete' href='#'><span data-toggle='tooltip' data-original-title='delete genre' class='glyphicon glyphicon-trash'></span></a>";
 			
 			return $Options;
 		}
 		
-		public static function update($Genre)
+		public static function getGenreForm($title, $datatable, $except, $repeat, $placeholders)
 		{
+			$GenreForm = new \FormularGenerator\formulargenerator($title, $datatable, $except, $repeat, $placeholders, false);
+			return $GenreForm;
+		}
 		
+		public static function create($name)
+		{
+			$Genre = new \EventManager\BusinessObjects\Genre(0, $name);
+			$createSuccessfull = $Genre->create();
+			
+			return $createSuccessfull;
+		}
+		
+		public static function delete($id)
+		{
+			$Genre = new \EventManager\BusinessObject\Genre($id, "");
+			$deleteSuccessfull = $Genre->delete();
+			
+			return $deleteSuccessfull;
 		}
 
 	}
