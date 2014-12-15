@@ -98,9 +98,9 @@
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("edit", "Resources/Configuration/config.ini");
 
-			$stmt = self::$DB->prepare("UPDATE Preisgruppe SET name = ? & preis = ? WHERE ID = ?");
+			$stmt = self::$DB->prepare("UPDATE Preisgruppe SET name = ?, preis = ? WHERE ID = ?");
 								
-			$stmt->bind_param("si", $Pricegroup->Name, $Pricegroup->Preis, $Pricegroup->idPricegroupe);
+			$stmt->bind_param("ssi", $Pricegroup->Name, $Pricegroup->getPrice(), $Pricegroup->idPricegroup);
 			
 			$successUpdate = $stmt->execute();
 			

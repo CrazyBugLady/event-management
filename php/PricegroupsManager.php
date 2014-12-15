@@ -29,14 +29,11 @@
 				case 'edit':
 					$Form .= "<form method='post' action='index.php?site=pricegroups&option=editsave&id=" . $idEdit . "'>" .
 							 "<tr>" . PHP_EOL .
-							 "<td><input type='text' class='form-control' name='txtName' value='". $Pricegroup->getName() ."'></td>" . PHP_EOL .
-							 "<td><input type='text' class='form-control' name='txtPreis' value='" . $Pricegroup->getPrice() . "'></td>" . PHP_EOL.
-							 "<td><input type='submit' class='btn btn-success' value='Ändern'>" . PHP_EOL . 
+							 "<td><input type='text' class='form-control' name='tbname' value='". $Pricegroup->getName() ."'></td>" . PHP_EOL .
+							 "<td><input type='text' class='form-control' name='tbpreis' value='" . $Pricegroup->getPrice() . "'></td>" . PHP_EOL.
+							 "<td><input type='submit' name='submit' class='btn btn-success' value='Ändern'>" . PHP_EOL . 
 									"<a href='index.php?site=pricegroups' class='btn btn-danger'>Cancel</a></td>". PHP_EOL .
 							 "</form>";
-				break;
-				case 'editsave':
-					
 				break;
 				default:
 					$Form .= "<tr>" . PHP_EOL .
@@ -109,6 +106,14 @@
 			$deleteSuccessfull = $Pricegroup->delete();
 			
 			return $deleteSuccessfull;
+		}
+		
+		public static function update($id, $price, $name)
+		{
+			$Pricegroup = new \EventManager\BusinessObjects\Pricegroup($id, $name, $price);
+			$updateSuccessfull = $Pricegroup->update();
+			
+			return $updateSuccessfull;
 		}
 		
 	}

@@ -25,7 +25,7 @@
 		$idGenre = $_REQUEST["selectedgenre"];
 	}
 	
-	$EventForm = \EventManager\EventManager::getEventForm("Veranstaltung erstellen", "veranstaltung", array("ID", "idGenre", "bearbeitungsdatum", "erstelldatum", "bild", "bildbeschreibung"), array(), array($Name, $Besetzung, $Beschreibung, $Dauer));
+	$EventForm = \EventManager\EventManager::getEventForm("create event", "veranstaltung", array("ID", "idGenre", "bearbeitungsdatum", "erstelldatum", "bild", "bildbeschreibung"), array(), array($Name, $Besetzung, $Beschreibung, $Dauer));
 	$EventForm->createForm("index.php?site=sign&selectedgenre=" . $idGenre);
 	
 	echo "<a href='index.php?site=show'>Zurück zur Eventübersicht</a>";

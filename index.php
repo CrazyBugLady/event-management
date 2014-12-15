@@ -109,6 +109,9 @@
 					case "archive":
 						include_once("php/sites/showArchive.php");
 						break;
+					case "edit":
+						include_once("php/sites/EditEvent.php");
+						break;
 				}
 			}
 			else

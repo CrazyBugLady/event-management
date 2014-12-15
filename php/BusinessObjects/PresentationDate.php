@@ -15,6 +15,18 @@
 			$this->PresentationDate = $Date;
 			$this->idEvent = $idEvent;
 		} 
+
+		public function setPresentationDate($Date)
+		{			
+			$this->PresentationDate = date("Y-m-d", strtotime($Date))
+		}
+		
+		public function create()
+		{
+			$createSuccessfull = \EventManager\PresentationDbModel::create($this);
+			
+			return $createSuccessfull;
+		}
 		
 	}
 ?>

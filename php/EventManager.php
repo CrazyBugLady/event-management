@@ -13,12 +13,6 @@
 		private static $perSite = 10,
 				$Title = 'EventManager';
 		
-		public static function countAllEvents($Filter)
-		{
-			$Events = \EventManager\Models\EventDbModel::readAll($Filter);
-			return sizeof($Events);
-		}
-		
 		// Events anzeigen mit selbst generiertem Filter
 		public static function showEvents($Page, $loggedInUser, $archive, $Genre)
 		{			
@@ -29,7 +23,7 @@
 			$EventsCurrentPage = \EventManager\Models\EventDbModel::readAll($Filter); // um nur Einträge von der aktuellen Page zu erhalten
 			
 			echo "<h2>". self::$Title ."</h2>";
-			echo "<h3>Events (". self::countAllEvents($Filter) .")</h3>";
+			echo "<h3>Events</h3>";
 		
 			self::setPaging(sizeof($allEvents), $Page, $archive);
 					
@@ -43,20 +37,33 @@
 			foreach($EventsCurrentPage as $Event)
 			{
 				echo "<table class='table table-striped'>" . PHP_EOL;
+				
 				echo "<tr>". PHP_EOL;
-				echo "<td colspan='2'><a href='Resources/Images/". $Event->PicturePath ."' class='thumbnailpicture'><img class='img-thumbnail' src='Resources/Images/" . $Event->PicturePath . "'></td>". PHP_EOL;
+				echo "<td><a href='Resources/Images/". $Event->PicturePath ."' class='thumbnailpicture'><img class='img-thumbnail' src='Resources/Images/" . $Event->PicturePath . "'></td>". PHP_EOL;
+				echo "<td>" . $Event->PictureDescription . "</td>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
+				
 				echo "<tr>". PHP_EOL;
-				echo "<td colspan='2'>" . $Event->PictureDescription . "</td>". PHP_EOL;
+				echo "<th>Titel:</th>". PHP_EOL;
+				echo "<td>" . $Event->Name. "</td>" . PHP_EOL;
 				echo "</tr>". PHP_EOL;
+				
 				echo "<tr>". PHP_EOL;
-				echo "<th colspan='2'>Title: " . $Event->Name. "</th>". PHP_EOL;
+				echo "<th>Genre:</th>". PHP_EOL;
+				echo "<td>" . $Event->getGenre(). "</td>" . PHP_EOL;
 				echo "</tr>". PHP_EOL;
-				echo "<tr>" . PHP_EOL;
-				echo "<td colspan='2'>Genre: ". $Event->getGenre() ."</td>" . PHP_EOL;
-				echo "<tr>" . PHP_EOL;
+				
+				echo "<tr>". PHP_EOL;
+				echo "<th colspan='2'>Beschreibung</td>". PHP_EOL;
+				echo "</tr>". PHP_EOL;
 				echo "<tr>". PHP_EOL;
 				echo "<td colspan='2'>" . $Event->Description . "</td>". PHP_EOL;
+				echo "</tr>". PHP_EOL;
+				echo "<tr>". PHP_EOL;
+				echo "<th colspan='2'>Besetzung</td>". PHP_EOL;
+				echo "</tr>". PHP_EOL;
+				echo "<tr>". PHP_EOL;
+				echo "<td colspan='2'>" . $Event->Persons . "</td>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
 				
 				echo "<tr>" . PHP_EOL;
@@ -202,7 +209,7 @@
 		public static function setOptions($idEvent)
 		{
 			$options = "";
-			$options .= "<a data-toggle='tooltip' data-original-title='edit event' href='#'><span class='glyphicon glyphicon-pencil'></span></a>";
+			$options .= "<a data-toggle='tooltip' data-original-title='edit event' href='index.php?site=edit&id=". $idEvent ."'><span class='glyphicon glyphicon-pencil'></span></a>";
 			$options .= "<a href='#' data-href='index.php?site=delete&id=" . $idEvent . "' data-toggle='modal' data-target='#confirm-delete'><span data-toggle='tooltip' title='delete event and dependencies' class='glyphicon glyphicon-trash'></span></a>";
 			$options .= "<a data-toggle='tooltip' data-original-title='watch the presentation data' href='index.php?site=presentation&id=". $idEvent ."'><span class='glyphicon glyphicon-calendar'></span></a>";
 			$options .= "<a data-toggle='tooltip' data-original-title='watch the prices' href='#'><span class='glyphicon glyphicon-usd'></span></a>";
