@@ -16,7 +16,7 @@
 		// Events anzeigen mit selbst generiertem Filter
 		public static function showEvents($Page, $loggedInUser, $archive, $Genre)
 		{			
-			$Filter = self::generateFilter(0, "Erstelldatum", "desc", false, $Genre); 
+			$Filter = self::generateFilter(0, "Erstelldatum", "desc", $archive, $Genre); 
 			$allEvents = \EventManager\Models\EventDbModel::readAll($Filter); // um alle Einträge zu kriegen, zuerst nicht Paging aktivieren
 			
 			$Filter = self::generateFilter($Page, "Erstelldatum", "desc", $archive, $Genre);
@@ -54,13 +54,13 @@
 				echo "</tr>". PHP_EOL;
 				
 				echo "<tr>". PHP_EOL;
-				echo "<th colspan='2'>Beschreibung</td>". PHP_EOL;
+				echo "<th colspan='2'>Beschreibung</th>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
 				echo "<tr>". PHP_EOL;
 				echo "<td colspan='2'>" . $Event->Description . "</td>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
 				echo "<tr>". PHP_EOL;
-				echo "<th colspan='2'>Besetzung</td>". PHP_EOL;
+				echo "<th colspan='2'>Besetzung</th>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
 				echo "<tr>". PHP_EOL;
 				echo "<td colspan='2'>" . $Event->Persons . "</td>". PHP_EOL;
@@ -93,22 +93,18 @@
 					
 				}
 				
-				echo "</td></ul>" . PHP_EOL;
+				echo "</ul></td>" . PHP_EOL;
 				echo "</tr>" . PHP_EOL;
 				
 				echo "<tr>" . PHP_EOL;
 				echo "<th colspan='2'>Preisgruppen</th>" . PHP_EOL;
 				echo "</tr>" . PHP_EOL;
-	
+				
 				$Pricegroups = $Event->getPricegroups();
 				
-				foreach($Pricegroups as $Pricegroup)
-				{
-					echo "<tr>" . PHP_EOL;
-					echo "<td>" . $Pricegroup->Name . "</td>" .PHP_EOL;
-					echo "<td>". $Pricegroup->Price ."</td>" . PHP_EOL;
-					echo "</tr>" . PHP_EOL;
-				}
+				echo "<tr>" . PHP_EOL;
+				echo "<td colspan='2'>" . self::getPricegroupCheckboxes($Pricegroups, $Event->idEvent) . "</td>";
+				echo "</tr>" . PHP_EOL;				
 				
 				if($Event->hasBeenModified())
 				{
@@ -187,7 +183,7 @@
 			<?php
 			
 			$PresentationForm =self::getEventForm("create presentationdate", "vorstellung", array("ID", "idVeranstaltung"), array(), array());
-			$PresentationForm->createForm("index.php?site=presentation?id=" . $Event->idEvent);
+			$PresentationForm->createForm("index.php?site=presentation&id=" . $Event->idEvent);
 		}
 		
 		public static function setPaging($Events, $currentPage, $archive)
@@ -214,6 +210,7 @@
 			$options .= "<a data-toggle='tooltip' data-original-title='watch the presentation data' href='index.php?site=presentation&id=". $idEvent ."'><span class='glyphicon glyphicon-calendar'></span></a>";
 			$options .= "<a data-toggle='tooltip' data-original-title='watch the prices' href='#'><span class='glyphicon glyphicon-usd'></span></a>";
 			$options .= "<a data-toggle='tooltip' data-original-title='edit the image' href='index.php?site=image&id=". $idEvent ."'><span class='glyphicon glyphicon-picture'></span</a>";
+			$options .= "<a data-toggle='tooltip' data-original-title='edit the links' href='index.php?site=links&id=".$idEvent."'><span class='glyphicon glyphicon-home'></span></a>";
 			
 			return $options;
 		}
@@ -237,6 +234,36 @@
 			?>
 			</select>
 			<?php
+		}
+		
+		public static function getPricegroupCheckboxes($selectedPricegroups, $idEvent)
+		{
+			$selectedIds = array();
+			$idindex = 0;
+			$Form = "";
+			
+			foreach($selectedPricegroups as $selected)
+			{
+				$selectedIds[$idindex] = $selected->getId();
+				$idindex++;
+			}
+		
+			$Pricegroups = \EventManager\Models\PricegroupsDbModel::readAll(0);
+			$Form .= "<form method='post' action='index.php?site=show&option=editpricegroups&id=" . $idEvent . "'>";
+			
+			foreach($Pricegroups as $key => $Pricegroup)
+			{
+				$checked = in_array($Pricegroup->getId(), $selectedIds) ? "checked" : "";
+				
+				$Form .= "<label class='checkbox-inline'> " . PHP_EOL .
+						 "  <input type='checkbox' name='pricegroups[]' value='". $Pricegroup->getId() . "' " . $checked . "> " . $Pricegroup->Name . PHP_EOL .
+					     "</label>";
+			}
+			
+			$Form .= "<br><input type='submit' class='btn btn-success' name='submit' value='Speichern'>";
+			$Form .= "</form>";
+			
+			return $Form;
 		}
 			
 		
@@ -298,6 +325,21 @@
 			return $createSuccessfull;
 		}
 
+		public static function updatePricegroupsFromEvent($selectedPricegroups, $idEvent)
+		{
+			$Event = \EventManager\Models\EventDbModel::read($idEvent);
+		
+			$Pricegroups = $Event->getPricegroups();
+			
+			\EventManager\Models\PriceGroupsDbModel::delete(0, $Event->idEvent);
+			
+			foreach($selectedPricegroups as $selectedPricegroup)
+			{
+				$Pricegroup = new \EventManager\BusinessObjects\Pricegroup($selectedPricegroup, "", "");
+				\EventManager\Models\PricegroupsDbModel::create($Pricegroup, $idEvent);
+			}
+		}
+		
 		public static function delete($idEvent)
 		{
 			$Event = new \EventManager\BusinessObjects\Event($idEvent, "", "", "", "", "", "", "", "", "");

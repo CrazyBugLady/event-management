@@ -18,12 +18,12 @@
 
 		public function setPresentationDate($Date)
 		{			
-			$this->PresentationDate = date("Y-m-d", strtotime($Date))
+			$this->PresentationDate = date("Y-m-d", strtotime($Date));
 		}
 		
 		public function create()
 		{
-			$createSuccessfull = \EventManager\PresentationDbModel::create($this);
+			$createSuccessfull = \EventManager\Models\PresentationDbModel::create($this);
 			
 			return $createSuccessfull;
 		}

@@ -62,15 +62,6 @@
 			</div>
 			
 			<?php
-			
-			if(EventManager\UserAuthenticator::isUserAlreadyLoggedIn())
-			{
-				include_once("php/inc/sidebar.logout.inc.php");
-			}
-			else
-			{
-				include_once("php/inc/sidebar.login.inc.php");
-			}
 					   
 			if(array_key_exists("site", $_REQUEST))
 			{

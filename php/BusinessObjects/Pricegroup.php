@@ -40,14 +40,14 @@
 		
 		public function create()
 		{
-			$createSuccessfull = \EventManager\Models\PricegroupsDbModel::create($this);
+			$createSuccessfull = \EventManager\Models\PricegroupsDbModel::create($this, 0);
 			
 			return $createSuccessfull;
 		}
 		
 		public function delete()
 		{
-			$deleteSuccessfull = \EventManager\Models\PricegroupsDbModel::delete($this);
+			$deleteSuccessfull = \EventManager\Models\PricegroupsDbModel::delete($this, 0);
 			
 			return $deleteSuccessfull;
 		}

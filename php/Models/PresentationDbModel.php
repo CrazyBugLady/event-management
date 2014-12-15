@@ -54,9 +54,20 @@
 			return $presentationData;
 		}
 		
-		public function create()
+		public function create($PresentationDate)
 		{
-			// wird in diesem Fall nicht unterstützt
+			self::$DB = \EventManager\Data\DB::getConnection("insert", "Resources/Configuration/config.ini");
+			
+			$stmt = self::$DB->prepare("INSERT INTO vorstellung" .
+									   " (zeit, datum, idVeranstaltung)" .
+									   " VALUES (?, ?, ?)");
+			$stmt->bind_param("ssi", $PresentationDate->PresentationTime, $PresentationDate->PresentationDate, $PresentationDate->idEvent);
+			
+			$successCreate = $stmt->execute();
+			
+			self::$DB->close();
+			
+			return $successCreate;
 		}
 		
 		public function delete()

@@ -67,13 +67,26 @@
 			return $Pricegroups;
 		}
 		
-		public function create($pricegroup)
+		public function create($pricegroup, $idevent)
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("insert", "Resources/Configuration/config.ini");
-			$stmt = self::$DB->prepare("INSERT INTO preisgruppe (name, preis) VALUES (?, ?)");
-			$stmt->bind_param("ss", 
-							  $pricegroup->getName(),
-							  $pricegroup->getPrice());
+			$stmt = "";
+			
+			if($idevent == 0)
+			{
+				$stmt = self::$DB->prepare("INSERT INTO preisgruppe (name, preis) VALUES (?, ?)");
+				$stmt->bind_param("ss", 
+								$pricegroup->getName(),
+								$pricegroup->getPrice());
+			}
+			else
+			{
+				$stmt = self::$DB->prepare("INSERT INTO veranstaltung_hat_preisgruppe (idPreisgruppe, idVeranstaltung) VALUES(?, ?)");
+				$stmt->bind_param("ss", 
+								$pricegroup->getId(),
+								$idevent);
+			}
+			
 			$successCreate = $stmt->execute();
 			
 			self::$DB->close();
@@ -81,12 +94,23 @@
 			return $successCreate;
 		}
 		
-		public function delete($pricegroup)
+		public function delete($pricegroup, $idEvent)
 		{
 			self::$DB = \EventManager\Data\DB::getConnection("delete", "Resources/Configuration/config.ini");
-			$stmt = self::$DB->prepare("DELETE FROM Preisgruppe WHERE ID = ?");
-			$stmt->bind_param("i", 
+			$stmt = "";
+			
+			if($idEvent == 0)
+			{
+				$stmt = self::$DB->prepare("DELETE FROM Preisgruppe WHERE ID = ?");
+				$stmt->bind_param("i", 
 							  $pricegroup->getId());
+			}
+			else
+			{
+				$stmt = self::$DB->prepare("DELETE FROM veranstaltung_hat_preisgruppe WHERE idVeranstaltung = ?");
+				$stmt->bind_param("i", 
+							  $idEvent);
+			}
 			$successDelete = $stmt->execute();
 			
 			self::$DB->close();
