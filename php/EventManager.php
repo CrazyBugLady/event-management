@@ -143,6 +143,11 @@
 		{
 			$Event = \EventManager\Models\EventDbModel::read($idEvent);
 			$PresentationData = $Event->getPresentationData();
+			
+			if(count($PresentationData) == 0)
+			{
+				echo "<p>Noch keine Vorstellungstermine vorhanden!</p>";
+			}
 		
 			?>
 				<script type="text/javascript">

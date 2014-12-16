@@ -1,9 +1,9 @@
 <?php
 	require_once("php/UserAuthenticator.php");
 	
-	if(GuestBook\UserAuthenticator::logOut())
+	if(\EventManager\UserAuthenticator::logOut())
 	{
-		header('Location: http://localhost/GUESTBOOK/GUESTBOOK/index.php?site=start');
+		header('Location: http://localhost/Git/event-management/index.php?site=start');
 		exit;
 	}
 ?>
