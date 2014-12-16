@@ -38,15 +38,7 @@
 			foreach($Genres as $Genre)
 			{
 				echo "<tr>" . PHP_EOL;
-					echo "<td>" . self::showEditForm($option, $idGenre, $Genre->getName(), $Genre->getId()) . "</td>" . PHP_EOL;
-					if($UserAvailable)
-					{
-						echo "<td>" . self::setOptions($Genre->getId()) . "</td>" . PHP_EOL;
-					}
-					else
-					{
-						echo "<td>No options available</td>";
-					}
+					echo self::showEditForm($option, $idGenre, $Genre->getName(), $Genre->getId(), $UserAvailable);
 				echo "</tr>" . PHP_EOL;
 			}
 			
@@ -55,31 +47,34 @@
 			<?php
 		}
 
-		public static function showEditForm($Option, $idEdit, $NameCurrent, $idCurrent)
+		public static function showEditForm($Option, $idEdit, $NameCurrent, $idCurrent, $UserAvailable)
 		{
+			$Form = "";
+		
 			if($idEdit != $idCurrent)
 			{
-				return $NameCurrent;
+				$Option = "default";
 			}
 		
 			switch($Option)
 			{
 				case "edit":
-					$Form = "";
 					if($idEdit == $idCurrent)
 					{
-						$EditForm = "<form method='post' action='index.php?site=genres&option=editsave&id=" . $idEdit . "'>" .
-									"<input type='text' name='txtName' class='form-control' value='". $NameCurrent ."'> <input type='submit' class='btn btn-success' value='Ändern'>" .
+						$EditForm = "<td><form method='post' action='index.php?site=genres&option=editsave&id=" . $idEdit . "'>" .
+									"<input type='text' name='txtName' class='form-control' value='". $NameCurrent ."'></td>" . PHP_EOL . 
+									"<td><input type='submit' class='btn btn-success' value='Ändern'>" .
 									"<a href='index.php?site=genres' class='btn btn-danger'>Cancel</a>" . 
-								"</form>";
+								"</form></td>";
 								$Form = $EditForm;
+						
+						return $Form;
 					}
 					else
 					{
-						$Form = $NameCurrent;
+						$Form = "<td>" . $NameCurrent . "</td>";
 					}
-					
-					return $Form;
+					break;
 				case "editsave":
 					$Genre = new \EventManager\BusinessObjects\Genre($idEdit, $_REQUEST["txtName"]);
 						
@@ -87,18 +82,30 @@
 					
 					if($Genre->update())
 					{
-						$ResultPanel = 	$_POST["txtName"] .
-										"<div class='panel panel-success'>Erfolgreich geändert.</div>"; 
+						$ResultPanel = 	"<td>" . $_POST["txtName"] .
+										"<div class='panel panel-success'>Erfolgreich geändert.</div></td>"; 
 					}
 					else
 					{
-						$ResultPanel = 	$NameCurrent .
-										"<div class='panel panel-danger'>Kein Erfolg beim Ändern.</div>"; 
+						$ResultPanel = 	"<td>" .$NameCurrent .
+										"<div class='panel panel-danger'>Kein Erfolg beim Ändern.</div></td>"; 
 					}
-					return $ResultPanel;
+					$Form .= $ResultPanel;
+					break;
 				default:
-					return $NameCurrent;
+					$Form .= "<td>" . $NameCurrent . "</td>";
 			}
+			
+			if($UserAvailable)
+			{
+				$Form .= "<td>" . self::setOptions($idCurrent) . "</td>" . PHP_EOL;
+			}
+			else
+			{
+				$Form .= "<td>No options available</td>";
+			}
+			
+			return $Form;
 		}
 		
 		public static function setOptions($idGenre)

@@ -17,11 +17,6 @@
 		\EventManager\EventManager::updateLinksFromEvent($_REQUEST["link-url"], $_REQUEST["link-name"], $Event->idEvent);
 	}
 	
-	if(array_key_exists("pricegroups", $_REQUEST))
-	{
-		\EventManager\EventManager::updatePricegroupsFromEvent($_REQUEST["pricegroups"], $Event->idEvent);
-	}
-	
 ?>
 
 <div role="tabpanel">
@@ -46,6 +41,7 @@
 	
 	if(array_key_exists("tbname", $_REQUEST))
 	{
+		$isUpdating = true;
 		if($EventForm->validationSuccessful(array($_REQUEST["tbname"], $_REQUEST["tbbesetzung"], $_REQUEST["txtbeschreibung"], $_REQUEST["tbdauer"])))
 		{
 			$Event->Name = $_REQUEST["tbname"];
@@ -55,31 +51,11 @@
 			
 			if(\EventManager\EventManager::update($Event))
 			{
-			?>
-				<div class="panel panel-success">
-					<div class="panel-heading">
-						Update erfolgreich
-					</div>
-					
-					<div class="panel-body">
-						Das Event konnte geändert werden. Zurück zur <a href="index.php?site=show">Übersicht</a>?<br>
-					</div>
-				</div>
-			<?php
+				$EventForm->showMessage("success", "Update erfolgreich", "Du konntest das Event erfolgreich updaten.");
 			}
 			else
 			{
-			?>
-				<div class="panel panel-danger">
-					<div class="panel-heading">
-						Fehler
-					</div>
-					
-					<div class="panel-body">
-						Ein Fehler ist aufgetreten. Kontaktiere den Administrator.	
-					</div>
-				</div>
-			<?php
+				$EventForm->showMessage("danger", "Update nicht erfolgreich", "Das Event konnte nicht erfolgreich geupdatet werden.");
 			}
 	}
 	else
@@ -106,12 +82,39 @@
 	<div role="tabpanel" class="tab-pane" id="pricegroups">
 	<h3>Edit Pricegroups</h3>
 		<?php
+			if(array_key_exists("pricegroups", $_REQUEST))
+			{
+				if(\EventManager\EventManager::updatePricegroupsFromEvent($_REQUEST["pricegroups"], $Event->idEvent))
+				{
+					$EventForm->showMessage("success", "Preisgruppen erfolgreich verwaltet", "Preisgruppen dieses Events konnten erfolgreich verwaltet werden.");
+				}
+				else
+				{
+					$EventForm->showMessage("danger", "Preisgruppen nicht erfolgreich verwaltet", "Preisgruppen dieses Events konnten leider nicht erfolgreich verwaltet werden.");
+				}
+			}
+			
 			echo \EventManager\EventManager::getPricegroupCheckboxes($Event->getPricegroups(), $Event->idEvent);
 		?>
 	</div>
     
 	<div role="tabpanel" class="tab-pane" id="links">
 	<h3>Edit Links</h3>
+	
+	<?php
+	if(array_key_exists("link-url", $_REQUEST))
+	{
+		if(\EventManager\EventManager::updateLinksFromEvent($_REQUEST["link-url"], $_REQUEST["link-name"], $Event->idEvent))
+		{
+			$EventForm->showMessage("success", "Links erfolgreich verwaltet", "Links dieses Events konnten erfolgreich verwaltet werden.");
+		}
+		else
+		{
+			$EventForm->showMessage("danger", "Links nicht erfolgreich verwaltet", "Links dieses Events konnten leider nicht erfolgreich verwaltet werden.");
+		}
+	}
+	?>
+	
 	<form action='index.php?site=edit&id=<?php echo $Event->idEvent; ?>' method='post'>
 		<table id="links" class='table table-responsive'>
 			<thead>

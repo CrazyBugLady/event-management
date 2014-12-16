@@ -113,6 +113,23 @@
 			return $Formfields;
 		}
 		
+		public function showMessage($class, $title, $message)
+		{
+			?>
+				<div class="panel panel-<?php echo $class; ?>">
+				<div class="panel-heading">
+					<?php echo $title; ?>
+				</div>
+				
+				<div>
+					<?php
+						echo $message;
+					?>
+				</div>
+			</div>
+			<?php
+		}
+		
 		private function validate($Values) // The Values must be in correct order
 		{
 			$FormFields = $this->getAllFields();

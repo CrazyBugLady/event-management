@@ -6,6 +6,8 @@
 	$id = 0;
 	$option = "";
 	
+	$PricegroupForm = \EventManager\PricegroupsManager::getPricegroupsForm("create pricegroup", "preisgruppe", array("ID"), array(), array());
+	
 	if(array_key_exists("option", $_REQUEST))
 	{
 		$option = $_REQUEST["option"];
@@ -20,34 +22,19 @@
 	{
 		if(array_key_exists("submit", $_POST))
 		{
-			if(\EventManager\PricegroupsManager::create($_REQUEST["tbname"], $_REQUEST["tbpreis"]))
+			if($PricegroupForm->validationSuccessful(array($_REQUEST["tbname"], $_REQUEST["tbpreis"])))
 			{
-				?>
-					<div class="panel panel-success">
-						<div class="panel-heading">
-							Preisgruppe erstellen erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Du konntest die Preisgruppe erfolgreich erstellen. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>
-						</div>
-					</div>
-				<?php
+				if(\EventManager\PricegroupsManager::create($_REQUEST["tbname"], $_REQUEST["tbpreis"])) {
+					$PricegroupForm->showMessage("success", "Preisgruppe erstellen erfolgreich", "Du konntest die Preisgruppe erfolgreich erstellen. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>");
+				}
+				else
+				{
+					$PricegroupForm->showMessage("danger", "Preisgruppe erstellen nicht erfolgreich", "Die Preisgruppe konnte nicht erfolgreich erstellt werden.");
+				}
 			}
 			else
 			{
-				?>
-					<div class="panel panel-danger">
-						<div class="panel-heading">
-							Preisgruppe erstellen nicht erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Die Preisgruppe konnte nicht erstellt werden.<br>
-						</div>
-					</div>
-				<?php
-
+				$PricegroupForm->showMessage("danger", "Fehler", $PricegroupForm->showValidationResult($_REQUEST["tbname"], $_REQUEST["tbpreis"]));
 			}
 		}
 	}	
@@ -55,31 +42,11 @@
 	{
 		if(\EventManager\PricegroupsManager::delete($_REQUEST["id"]))
 		{
-				?>
-					<div class="panel panel-success">
-						<div class="panel-heading">
-							Preisgruppe löschen erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Die Preisgruppe konnte erfolgreich gelöscht werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>
-						</div>
-					</div>
-				<?php
+			$PricegroupForm->showMessage("success", "Preisgruppe löschen erfolgreich", "Die Preisgruppe konnte erfolgreich gelöscht werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>");
 		}
 		else
 		{
-			?>
-					<div class="panel panel-danger">
-						<div class="panel-heading">
-							Preisgruppe löschen nicht erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Die Preisgruppe konnte leider nicht gelöscht werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>
-						</div>
-					</div>
-				<?php
+			$PricegroupForm->showMessage("danger", "Preisgruppe löschen nicht erfolgreich", "Die Preisgruppe konnte leider nicht gelöscht werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>");
 		}
 	}
 	else if($option == "editsave")
@@ -91,40 +58,15 @@
 			
 				if(\EventManager\PricegroupsManager::update($id, $Preis, $Name))
 				{
-					?>
-						<div class="panel panel-success">
-							<div class="panel-heading">
-									Preisgruppe bearbeiten erfolgreich
-								</div>
-					
-								<div class="panel-body">
-									Die Preisgruppe konnte bearbeitet werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>
-								</div>
-							</div>
-						<?php
+					$PricegroupForm->showMessage("success", "Preisgruppe bearbeiten erfolgreich", "Die Preisgruppe konnte bearbeitet werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>");
 				}
 				else
 				{
-					?>
-						<div class="panel panel-danger">
-							<div class="panel-heading">
-								Preisgruppe bearbeiten nicht erfolgreich
-							</div>
-				
-							<div class="panel-body">
-								Die Preisgruppe konnte leider nicht bearbeitet werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>
-							</div>
-						</div>
-					<?php
+					$PricegroupForm->showMessage("danger", "Preisgruppe bearbeiten nicht erfolgreich", "Die Preisgruppe konnte leider nicht bearbeitet werden. Zurück zur <a href='index.php?site=pricegroups'>Übersicht</a><br>");
 				}
 			}
-		}
-		else
-		{	
-			\EventManager\PricegroupsManager::showPricegroupsSite($User != "", $option, $id);		
-		
-			$PricegroupForm = \EventManager\PricegroupsManager::getPricegroupsForm("create pricegroup", "preisgruppe", array("ID"), array(), array());
-			$PricegroupForm->createForm("index.php?site=pricegroups&option=create");
-		}
+	}
+	\EventManager\PricegroupsManager::showPricegroupsSite($User != "", $option, $id);		
+	$PricegroupForm->createForm("index.php?site=pricegroups&option=create");
 	
 ?>

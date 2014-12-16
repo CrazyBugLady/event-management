@@ -6,6 +6,8 @@
 	$id = 0;
 	$option = "";
 	
+	$GenreForm = \EventManager\GenresManager::getGenreForm("create genre", "genre", array("ID"), array(), array());
+	
 	if(array_key_exists("option", $_REQUEST))
 	{
 		$option = $_REQUEST["option"];
@@ -22,32 +24,11 @@
 		{
 			if(\EventManager\GenresManager::create($_REQUEST["tbname"]))
 			{
-				?>
-					<div class="panel panel-success">
-						<div class="panel-heading">
-							Genre erstellen erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Du konntest das Genre erfolgreich erstellen. Zurück zur <a href='index.php?site=genres'>Übersicht</a><br>
-						</div>
-					</div>
-				<?php
+				$GenreForm->showMessage("success", "Genre erstellen erfolgreich", "Du konntest das Genre erfolgreich erstellen. Zurück zur <a href='index.php?site=genres'>Übersicht</a><br>");
 			}
 			else
 			{
-				?>
-					<div class="panel panel-danger">
-						<div class="panel-heading">
-							Genre erstellen nicht erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Das Genre konnte nicht erstellt werden.<br>
-						</div>
-					</div>
-				<?php
-
+				$GenreForm->showMessage("danger", "Genre erstellen nicht erfolgreich", "Das Genre konnte nicht erstellt werden.<br>");
 			}
 		}
 	}	
@@ -55,38 +36,17 @@
 	{
 		if(\EventManager\GenresManager::delete($_REQUEST["id"]))
 		{
-				?>
-					<div class="panel panel-success">
-						<div class="panel-heading">
-							Genre löschen erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Das Genre konnte erfolgreich gelöscht werden.<br>
-						</div>
-					</div>
-				<?php
+			$GenreForm->showMessage("success", "Genre löschen erfolgreich", "Das Genre konnte erfolgreich gelöscht werden.<br>");
 		}
 		else
 		{
-			?>
-				<div class="panel panel-danger">
-					<div class="panel-heading">
-							Genre löschen nicht erfolgreich
-						</div>
-			
-						<div class="panel-body">
-							Das Genre konnte nicht gelöscht werden.<br>
-						</div>
-					</div>
-				<?php
+			$GenreForm->showMessage("danger", "Genre löschen nicht erfolgreich", "Das Genre konnte nicht gelöscht werden.<br>");
 		}
 	}
-    else
-	{	
+	
+	
 		\EventManager\GenresManager::showGenreSite($User != "", $option, $id);
-		
+
 		$GenreForm = \EventManager\GenresManager::getGenreForm("create genre", "genre", array("ID"), array(), array());
 		$GenreForm->createForm("index.php?site=genres&option=create");
-	}
 ?>

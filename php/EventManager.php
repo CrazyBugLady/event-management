@@ -169,7 +169,7 @@
 								?>
 							],
 							eventClick: function(event) {
-								alert('Duration: <?php echo $Event->Duration; ?>h');
+								alert('Duration: <?php echo $Event->Duration; ?>h \n Uhrzeit: <?php echo $PresentationDate->PresentationTime; ?>');
 								
 								if (event.url) {
 									
