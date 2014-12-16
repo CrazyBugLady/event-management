@@ -1,6 +1,8 @@
 <?php
 	namespace EventManager\BusinessObjects;
 
+	require_once("php/Models/LinkDbModel.php");
+	
 	class Link
 	{
 		public $IdLink;
@@ -15,6 +17,13 @@
 			$this->Link = $Link;
 			$this->idEvent = $idEvent;
 		} 
+		
+		public function create()
+		{
+			$createSuccessfull = \EventManager\Models\LinkDbModel::create($this);
+			
+			return $createSuccessfull;
+		}
 		
 	}
 ?>

@@ -54,14 +54,45 @@
 			return $links;
 		}
 		
-		public function create()
+		public function create($link)
 		{
-			// wird in diesem Fall nicht unterstützt
+			self::$DB = \EventManager\Data\DB::getConnection("insert", "Resources/Configuration/config.ini");
+			
+			$stmt = self::$DB->prepare("INSERT INTO link (name, link, idVeranstaltung) VALUES (?, ?, ?)");
+			$stmt->bind_param("ssi", 
+							$link->Name,
+							$link->Link,
+							$link->idEvent);
+			
+			$successCreate = $stmt->execute();
+			
+			self::$DB->close();
+			
+			return $successCreate;
 		}
 		
-		public function delete()
+		public function delete($link, $idEvent)
 		{
-			// wird in diesem Fall nicht unterstützt
+			self::$DB = \EventManager\Data\DB::getConnection("delete", "Resources/Configuration/config.ini");
+			$stmt = "";
+			
+			if($idEvent == 0)
+			{
+				$stmt = self::$DB->prepare("DELETE FROM Link WHERE ID = ?");
+				$stmt->bind_param("i", 
+							  $link->IdLink());
+			}
+			else
+			{
+				$stmt = self::$DB->prepare("DELETE FROM Link WHERE idVeranstaltung = ?");
+				$stmt->bind_param("i", 
+							  $idEvent);
+			}
+			$successDelete = $stmt->execute();
+			
+			self::$DB->close();
+			
+			return $successDelete;
 		}
 		
 		public function update()

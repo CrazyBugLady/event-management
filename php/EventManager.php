@@ -13,6 +13,11 @@
 		private static $perSite = 10,
 				$Title = 'EventManager';
 		
+		public static function showEventsTable()
+		{
+		
+		}
+		
 		// Events anzeigen mit selbst generiertem Filter
 		public static function showEvents($Page, $loggedInUser, $archive, $Genre)
 		{			
@@ -39,7 +44,7 @@
 				echo "<table class='table table-striped'>" . PHP_EOL;
 				
 				echo "<tr>". PHP_EOL;
-				echo "<td><a href='Resources/Images/". $Event->PicturePath ."' class='thumbnailpicture'><img class='img-thumbnail' src='Resources/Images/" . $Event->PicturePath . "'></td>". PHP_EOL;
+				echo "<td><a class='fancybox' href='Resources/Images/". $Event->PicturePath ."'><img class='img-thumbnail' src='Resources/Images/" . $Event->PicturePath . "'></td>". PHP_EOL;
 				echo "<td>" . $Event->PictureDescription . "</td>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
 				
@@ -102,9 +107,13 @@
 				
 				$Pricegroups = $Event->getPricegroups();
 				
-				echo "<tr>" . PHP_EOL;
-				echo "<td colspan='2'>" . self::getPricegroupCheckboxes($Pricegroups, $Event->idEvent) . "</td>";
-				echo "</tr>" . PHP_EOL;				
+				foreach($Pricegroups as $Pricegroup)
+				{
+					echo "<tr>" . PHP_EOL;
+					echo "<td>" . $Pricegroup->Name . "</td>";
+					echo "<td>". $Pricegroup->Price ."</td>";
+					echo "</tr>" . PHP_EOL;	
+				}		
 				
 				if($Event->hasBeenModified())
 				{
@@ -208,9 +217,6 @@
 			$options .= "<a data-toggle='tooltip' data-original-title='edit event' href='index.php?site=edit&id=". $idEvent ."'><span class='glyphicon glyphicon-pencil'></span></a>";
 			$options .= "<a href='#' data-href='index.php?site=delete&id=" . $idEvent . "' data-toggle='modal' data-target='#confirm-delete'><span data-toggle='tooltip' title='delete event and dependencies' class='glyphicon glyphicon-trash'></span></a>";
 			$options .= "<a data-toggle='tooltip' data-original-title='watch the presentation data' href='index.php?site=presentation&id=". $idEvent ."'><span class='glyphicon glyphicon-calendar'></span></a>";
-			$options .= "<a data-toggle='tooltip' data-original-title='watch the prices' href='#'><span class='glyphicon glyphicon-usd'></span></a>";
-			$options .= "<a data-toggle='tooltip' data-original-title='edit the image' href='index.php?site=image&id=". $idEvent ."'><span class='glyphicon glyphicon-picture'></span</a>";
-			$options .= "<a data-toggle='tooltip' data-original-title='edit the links' href='index.php?site=links&id=".$idEvent."'><span class='glyphicon glyphicon-home'></span></a>";
 			
 			return $options;
 		}
@@ -249,7 +255,7 @@
 			}
 		
 			$Pricegroups = \EventManager\Models\PricegroupsDbModel::readAll(0);
-			$Form .= "<form method='post' action='index.php?site=show&option=editpricegroups&id=" . $idEvent . "'>";
+			$Form .= "<form method='post' action='index.php?site=edit&id=" . $idEvent . "'>";
 			
 			foreach($Pricegroups as $key => $Pricegroup)
 			{
@@ -262,6 +268,23 @@
 			
 			$Form .= "<br><input type='submit' class='btn btn-success' name='submit' value='Speichern'>";
 			$Form .= "</form>";
+			
+			return $Form;
+		}
+		
+		public static function getLinksTextboxes($Links, $idEvent)
+		{
+			$Form = "";
+			
+			foreach($Links as $Link)
+			{
+				$Form .= "<tr><td width='50%'><input name='link-name[]' type='text' class='form-control' required='required' pattern='{0,50}'" .
+										   "maxlength='50' title='name for the url' value='" . $Link->Link . "'></td>" . PHP_EOL . 
+						 "<td><input name='link-url[]' type='url' class='form-control' required='required' pattern='{5,255}'" .
+										   "maxlength='50' value='" . $Link->Name . "'></td>" . PHP_EOL . 
+						 "<td><a class='delete-link' title='Delete this link'><span class='glyphicon glyphicon-trash'></span></td></tr>";
+										
+			}
 			
 			return $Form;
 		}
@@ -327,19 +350,40 @@
 
 		public static function updatePricegroupsFromEvent($selectedPricegroups, $idEvent)
 		{
-			$Event = \EventManager\Models\EventDbModel::read($idEvent);
-		
-			$Pricegroups = $Event->getPricegroups();
+			\EventManager\Models\PriceGroupsDbModel::delete(0, $idEvent);
 			
-			\EventManager\Models\PriceGroupsDbModel::delete(0, $Event->idEvent);
+			$createSuccessfull = false;
 			
 			foreach($selectedPricegroups as $selectedPricegroup)
 			{
 				$Pricegroup = new \EventManager\BusinessObjects\Pricegroup($selectedPricegroup, "", "");
-				\EventManager\Models\PricegroupsDbModel::create($Pricegroup, $idEvent);
+				$createSuccessfull = \EventManager\Models\PricegroupsDbModel::create($Pricegroup, $idEvent);
 			}
+			
+			return $createSuccessfull;
 		}
 		
+		/**
+		* Funktion zum Updaten der Events
+		*/
+		public static function updateLinksFromEvent($links, $names, $idEvent)
+		{
+			\EventManager\Models\LinkDbModel::delete(0, $idEvent);
+			
+			$createSuccessfull = false;
+			
+			foreach($links as $key => $link)
+			{
+				$Link = new \EventManager\BusinessObjects\Link(0, $names[$key], $link, $idEvent);
+				$createSuccessfull = $Link->create();
+			}
+			
+			return $createSuccessfull;
+		}
+		
+		/**
+		* Funktion zum Löschen eines Events
+		*/
 		public static function delete($idEvent)
 		{
 			$Event = new \EventManager\BusinessObjects\Event($idEvent, "", "", "", "", "", "", "", "", "");
@@ -348,6 +392,9 @@
 			return $deleteSuccessfull;
 		}
 		
+		/**
+		* Funktion zum Updaten eines Events
+		*/
 		public static function update($Event)
 		{
 			$updateSuccessfull = $Event->update();

@@ -1,6 +1,6 @@
 # Rechte für `deleteUser`@`localhost`
 
-GRANT DELETE, DROP ON *.* TO 'deleteUser'@'localhost' IDENTIFIED BY PASSWORD '*906AD45F3193912A44589404C837025C50BB1C06';
+GRANT SELECT, INSERT, DELETE, DROP ON *.* TO 'deleteUser'@'localhost' IDENTIFIED BY PASSWORD '*906AD45F3193912A44589404C837025C50BB1C06';
 
 GRANT ALL PRIVILEGES ON `eventkalender`.* TO 'deleteUser'@'localhost';
 
@@ -10,6 +10,8 @@ GRANT ALL PRIVILEGES ON `eventkalender`.* TO 'deleteUser'@'localhost';
 GRANT UPDATE ON *.* TO 'editUser'@'localhost' IDENTIFIED BY PASSWORD '*D545E00E4F906839935E949305FB6E2385EB4FA9';
 
 GRANT ALL PRIVILEGES ON `eventkalender`.* TO 'editUser'@'localhost';
+
+GRANT UPDATE ON `eventkalender`.`genre` TO 'editUser'@'localhost';
 
 
 # Rechte für `insertUser`@`localhost`

@@ -18,8 +18,10 @@
     <link href="Resources/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="Resources/css/custom.css">
 	<link rel='stylesheet' href='Resources/fullcalendar/fullcalendar.css' />
+	<link rel="stylesheet" href="Resources/css/jquery.fancybox.css" type="text/css" media="screen" />
 	
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="Resources/js/jquery.fancybox.pack.js"></script>
     <script src="Resources/js/bootstrap.min.js"></script>
     <script src="Resources/js/custom.js"></script>
 	<script src='Resources/js/moment.js'></script>
@@ -78,9 +80,6 @@
 						break;
 					case "presentation":
 						include_once("php/sites/PresentationData.php");
-						break;
-					case "image":
-						include_once("php/sites/editEventImage.php");
 						break;
 					case "sign":
 						include_once("php/sites/makeEvent.php");

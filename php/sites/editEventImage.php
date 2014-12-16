@@ -10,7 +10,7 @@
 		$Event = \EventManager\Models\EventDbModel::read($_REQUEST["id"]);	
 	}
 
-if(array_key_exists("submit", $_POST))
+if(array_key_exists("fileupload", $_POST))
 {
 if ( $_FILES['uploaddatei']['name']  <> "" )
 {
@@ -66,7 +66,7 @@ if ( $_FILES['uploaddatei']['name']  <> "" )
 }
 ?>
 
-<form name="uploadformular" enctype="multipart/form-data" action="index.php?site=image&id=<?php echo $Event->idEvent; ?>" method="post" >
+<form name="uploadformular" enctype="multipart/form-data" action="index.php?site=edit&id=<?php echo $Event->idEvent; ?>" method="post" >
 
  <div class="form-group">
     <label for="lbluploaddatei">Datei:</label>
@@ -77,7 +77,7 @@ if ( $_FILES['uploaddatei']['name']  <> "" )
 	<label for="lblBildbeschreibung">Bildbeschreibung</label>
 		<textarea class='form-control' name='tbBildbeschreibung' maxlength='255'></textarea>
  </div>
-<input class='btn btn-success' type="Submit" name="submit" value="upload image">
+<input class='btn btn-success' type="Submit" name="fileupload" value="upload image">
 
 </form>
 
