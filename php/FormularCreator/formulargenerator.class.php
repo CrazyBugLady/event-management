@@ -64,7 +64,7 @@
 				echo "<div class='form-group'>";
 					echo "<div class='col-sm-offset-2 col-sm-10'>";
 						echo "<button type='submit' class='btn btn-success' name='submit'>Abschicken</button>";
-						echo "<button type='reset' class='btn btn-default'>Zurücksetzen</button>";
+						echo "<button type='cancel' class='btn btn-default'>Zurücksetzen</button>";
 					echo "</div>";
 				echo "</div>";
 			echo "</form>";

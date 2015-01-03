@@ -27,8 +27,10 @@ $(document).ready(function() {
 		addLinkRow();
 	});
 	
-	updateLinkDeleteHandlers();
+	// Stelle sicher, dass alle Linkzeilen ein Event haben, sobald man die Buttons anklickt.
+	setLinkDeleteHandlers();
 
+	// Hinzufügen einer Link - Tabellenzeile : Info: Fremdcode verwendet => an bestehende Applikation angepasst
 	function addLinkRow() {
 		$('#links tbody').append('<tr> \
 											<td width="30%"> \
@@ -47,23 +49,25 @@ $(document).ready(function() {
 												</a> \
 											</td> \
 										</tr>');
-		updateLinkDeleteHandlers();
+		setLinkDeleteHandlers();
 	}
 	
-	function deleteLinkRow(sender) {
-		// TODO: Display name (if available) or url of link the user is about to delete
+	
+	// Funktion zum Löschen einer Tabellenzeile der Links : Info: Fremdcode verwendet => an bestehende Applikation angepasst
+	function deleteLink(sender) {
 		if (confirm('Do you really want to delete this link?')) {
 			var row = sender.parents('tr').first();
 			row.remove();
-			updateLinkDeleteHandlers();
+			setLinkDeleteHandlers();
 		}	
 	}
 	
-	function updateLinkDeleteHandlers() {
+	// Funktion zum Hinzufügen der Changeevents zu den einzelnen Buttons (beispielsweise durch PHP hinzugefügte haben diese Handler nicht von Anfang an : Info: Fremdcode verwendet => an bestehende Applikation angepasst
+	function setLinkDeleteHandlers() {
 		$('.delete-link').off('click');
 		
 		$('.delete-link').on('click', function () {
-			deleteLinkRow($(this));
+			deleteLink($(this));
 		});
 	}
 	

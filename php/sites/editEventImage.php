@@ -18,7 +18,7 @@ if ( $_FILES['uploaddatei']['name']  <> "" )
     // und kann nun weiterverarbeitet werden
  
     // Kontrolle, ob Dateityp zulässig ist
-    $zugelassenedateitypen = array("image/png", "image/jpeg", "image/gif");
+    $zugelassenedateitypen = array("image/png", "image/jpeg");
  
     if ( ! in_array( $_FILES['uploaddatei']['type'] , $zugelassenedateitypen ))
     {
@@ -30,6 +30,42 @@ if ( $_FILES['uploaddatei']['name']  <> "" )
              $_FILES['uploaddatei']['tmp_name'] ,
              'Resources/Images/'. $_FILES['uploaddatei']['name'] );
 		
+		
+		// get image to resize with gd library
+		$image = "";
+		
+		if($_FILES['uploaddatei']['type'] == "image/png")
+			$image = imagecreatefrompng( 'Resources/Images/'. $_FILES['uploaddatei']['name']);
+		else if($_FILES['uploaddatei']['type'] == "image/jpeg")
+		{
+			$image = imagecreatefromjpeg('Resources/Images/'. $_FILES['uploaddatei']['name']);
+		}
+		
+		$width = imagesx( $image );
+		$height = imagesy( $image );
+
+		$new_width = 100;
+		$new_height = 100;
+		// calculates depending on the height and the width
+		if($height < $width)
+		{
+			// calculate thumbnail size
+			$new_height = floor( $height * ( 100 / $width ) );
+		}
+		else
+		{
+			$new_width = floor( $width * (100 / $height));
+		}
+		
+		// create a new temporary image
+		$tmp_img = imagecreatetruecolor( $new_width, $new_height );
+	
+		// copy and resize old image into new image
+		imagecopyresized( $tmp_img, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height );
+	
+		// save thumbnail into a file
+		imagejpeg( $tmp_img, 'Resources/Images/thumbnails/'.$_FILES['uploaddatei']['name']);
+
 		$Event->PictureDescription = $_REQUEST["tbBildbeschreibung"];
 		$Event->PicturePath = $_FILES["uploaddatei"]["name"];
 		

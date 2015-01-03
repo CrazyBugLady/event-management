@@ -27,6 +27,7 @@
     <li role="presentation"><a href="#pricegroups" aria-controls="pricegroups" role="tab" data-toggle="tab">Pricegroups</a></li>
     <li role="presentation"><a href="#links" aria-controls="links" role="tab" data-toggle="tab">Links</a></li>
 	<li role="presentation"><a href="#file" aria-controls="file" role="tab" data-toggle="tab">File</a></li>
+	<li role="presentation"><a href="#genre" aria-controls="genre" role="tab" data-toggle="tab">Genre</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -34,21 +35,34 @@
   
     <div role="tabpanel" class="tab-pane active" id="general">
 <?php
+	$Name = $Event->Name;
+	$Besetzung = $Event->Persons;
+	$Beschreibung = $Event->Description;
+	$Dauer = $Event->Duration;
+	
+	if(array_key_exists("tbname", $_REQUEST))
+	{
+		$Name = $_REQUEST["tbname"];
+		$Besetzung = $_REQUEST["tbbesetzung"];
+		$Beschreibung = $_REQUEST["txtbeschreibung"];
+		$Dauer = $_REQUEST["tbdauer"];
+	}
+			
 			
 	// kreieren des Formulars zur Bearbeitung eines Eintrags
-	$EventForm = EventManager\EventManager::getEventForm("Edit Event", "veranstaltung", array("ID", "idGenre", "bearbeitungsdatum", "erstelldatum", "bild", "bildbeschreibung"), array(), array($Event->Name, $Event->Persons, $Event->Description, $Event->Duration));
+	$EventForm = EventManager\EventManager::getEventForm("Edit Event", "veranstaltung", array("ID", "idGenre", "bearbeitungsdatum", "erstelldatum", "bild", "bildbeschreibung"), array(), array($Name, $Besetzung, $Beschreibung, $Dauer));
 	$EventForm->createForm("index.php?site=edit&id=" . $Event->idEvent);
 	
 	if(array_key_exists("tbname", $_REQUEST))
 	{
 		$isUpdating = true;
-		if($EventForm->validationSuccessful(array($_REQUEST["tbname"], $_REQUEST["tbbesetzung"], $_REQUEST["txtbeschreibung"], $_REQUEST["tbdauer"])))
+		if($EventForm->validationSuccessful(array($Name, $Besetzung, $Beschreibung, $Dauer)))
 		{
-			$Event->Name = $_REQUEST["tbname"];
-			$Event->Persons = $_REQUEST["tbbesetzung"];
-			$Event->Description = $_REQUEST["txtbeschreibung"];
-			$Event->Duration = $_REQUEST["tbdauer"];
-			
+			$Event->Name = $Name;
+			$Event->Persons = $Besetzung;
+			$Event->Description = $Beschreibung;
+			$Event->Duration = $Dauer;
+
 			if(\EventManager\EventManager::update($Event))
 			{
 				$EventForm->showMessage("success", "Update erfolgreich", "Du konntest das Event erfolgreich updaten.");
@@ -60,19 +74,7 @@
 	}
 	else
 	{
-		?>
-			<div class="panel panel-danger">
-				<div class="panel-heading">
-					Fehler
-				</div>
-				
-				<div>
-					<?php 
-						echo $EventForm->showValidationResult(array($_REQUEST["tbname"], $_REQUEST["tbbesetzung"], $_REQUEST["txtbeschreibung"], $_REQUEST["tbdauer"]));
-					?>
-				</div>
-			</div>
-		<?php
+		$EventForm->showMessage("danger", "Fehler", $EventForm->showValidationResult(array($Name, $Besetzung, $Beschreibung, $Dauer)));
 	}
 }
 	
@@ -141,6 +143,34 @@
 	<?php
 		include_once("editEventImage.php");
 	?>
+	</div>
+	
+	<div role="tabpanel" class="tab-pane" id="genre">
+		<h3>Genre</h3>
+		
+		<?php
+			if(array_key_exists("selectedgenre", $_REQUEST))
+			{
+				$Event->idGenre = $_REQUEST["selectedgenre"];
+				if(\EventManager\EventManager::update($Event))
+				{
+					$EventForm->showMessage("success", "Genre erfolgreich geändert", "Genre des Events konnte erfolgreich geändert werden.");
+				}
+				else
+				{
+					$EventForm->showMessage("danger", "Genre nicht geändert", "Genre des Events konnte nicht erfolgreich geändert werden.");
+				}
+			}
+		?>
+		
+		<form method="post" action="index.php?site=edit&id=<?php echo $Event->idEvent; ?>">
+		<?php
+			$selectedGenre = $Event->idGenre;
+		
+			\EventManager\EventManager::getGenreDropdown(false, $selectedGenre);
+		?>
+		<input type="submit" name="submit" class="btn btn-success" value="Ändern">		
+		</form>
 	</div>
   
   </div>

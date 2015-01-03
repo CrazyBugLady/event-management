@@ -13,38 +13,82 @@
 		private static $perSite = 10,
 				$Title = 'EventManager';
 		
-		public static function showEventsTable()
-		{
-		
+		// Events anzeigen mit selbst generiertem Filter
+		public static function showEvents($Page, $loggedInUser, $archive, $Genre, $idEvent)
+		{			
+			if($idEvent == 0)
+			{
+				$Filter = self::generateFilter(0, "concat(Vorstellung.datum, ' ', Vorstellung.zeit)", "asc", $archive, $Genre); 
+				$allEvents = \EventManager\Models\EventDbModel::readAll($Filter); // um alle Einträge zu kriegen, zuerst nicht Paging aktivieren
+				
+				$Filter = self::generateFilter($Page, "concat(Vorstellung.datum, ' ', Vorstellung.zeit)", "asc", $archive, $Genre);
+				$EventsCurrentPage = \EventManager\Models\EventDbModel::readAll($Filter); // um nur Einträge von der aktuellen Page zu erhalten
+				
+				echo "<h2>". self::$Title ."</h2>";
+				echo "<h3>Events</h3>";
+			
+				self::setPaging(sizeof($allEvents), $Page, $archive);
+							
+				self::showFilterGenre($Page, $archive, $Genre);		
+						
+				if($loggedInUser != "")
+				{
+					echo "<p><a href='#' data-toggle='modal' data-target='#confirm-create-event'>You want to make a new Event?</a></p>" . PHP_EOL;
+				}
+				
+				// Ausgabe der Events für diese Seite
+				if(sizeof($EventsCurrentPage) == 0)
+				{
+					echo "<p>Auf dieser Seite gibt es keine Events!</p>" . PHP_EOL;
+				}
+				else
+				{
+					self::showList($EventsCurrentPage);
+				}
+			}
+			else
+			{
+				$Event = \EventManager\Models\EventDbModel::read($idEvent);
+				
+				echo "<h3>Detailansicht</h3>";
+				
+				if($Event->Name != ""){
+					self::showDetails($Event, $loggedInUser, $archive);
+				}
+				else
+				{
+					echo "Event nicht vorhanden!";
+				}
+			}
 		}
 		
-		// Events anzeigen mit selbst generiertem Filter
-		public static function showEvents($Page, $loggedInUser, $archive, $Genre)
-		{			
-			$Filter = self::generateFilter(0, "Erstelldatum", "desc", $archive, $Genre); 
-			$allEvents = \EventManager\Models\EventDbModel::readAll($Filter); // um alle Einträge zu kriegen, zuerst nicht Paging aktivieren
+		public static function showList($Events)
+		{
+			print("<table class='table table-striped'>" . PHP_EOL .
+						"<tr>" . PHP_EOL .
+							"<th>Name</th>" . PHP_EOL .
+							"<th>Duration</th>" . PHP_EOL .
+							"<th>Detailansicht</th>" . PHP_EOL .
+						"</tr>" . PHP_EOL);
 			
-			$Filter = self::generateFilter($Page, "Erstelldatum", "desc", $archive, $Genre);
-			$EventsCurrentPage = \EventManager\Models\EventDbModel::readAll($Filter); // um nur Einträge von der aktuellen Page zu erhalten
-			
-			echo "<h2>". self::$Title ."</h2>";
-			echo "<h3>Events</h3>";
-		
-			self::setPaging(sizeof($allEvents), $Page, $archive);
-					
-			self::showFilterGenre($Page, $archive);		
-					
-			if($loggedInUser != "")
+			foreach($Events as $Event)
 			{
-				echo "<p><a href='#' data-toggle='modal' data-target='#confirm-create-event'>You want to make a new Event?</a></p>" . PHP_EOL;
+				print("<tr>" . PHP_EOL . 
+							"<td>" . $Event->Name . "</td>" . PHP_EOL .
+							"<td>" . $Event->Duration . "h</td>" . PHP_EOL .
+							"<td><a href='index.php?site=show&id=" . $Event->idEvent . "'>Event genauer betrachten</a></td>" . PHP_EOL .
+					   "</tr>" . PHP_EOL);
 			}
 			
-			foreach($EventsCurrentPage as $Event)
-			{
+			echo "</table>";
+		}
+		
+		public static function showDetails($Event, $loggedInUser, $archive)
+		{
 				echo "<table class='table table-striped'>" . PHP_EOL;
 				
 				echo "<tr>". PHP_EOL;
-				echo "<td><a class='fancybox' href='Resources/Images/". $Event->PicturePath ."'><img class='img-thumbnail' src='Resources/Images/" . $Event->PicturePath . "'></td>". PHP_EOL;
+				echo "<td><a class='fancybox' href='Resources/Images/". $Event->PicturePath ."'><img class='img-thumbnail' src='Resources/Images/thumbnails/" . $Event->PicturePath . "'></td>". PHP_EOL;
 				echo "<td>" . $Event->PictureDescription . "</td>". PHP_EOL;
 				echo "</tr>". PHP_EOL;
 				
@@ -132,11 +176,6 @@
 				echo "</table>". PHP_EOL;
 				
 				echo "<br> <br>";
-			}
-			if(sizeof($EventsCurrentPage) == 0)
-			{
-				echo "<p>Auf dieser Seite gibt es keine Events!</p>" . PHP_EOL;
-			}
 		}
 		
 		public static function showCalendar($idEvent)
@@ -226,7 +265,7 @@
 			return $options;
 		}
 		
-		public static function getGenreDropdown($filter)
+		public static function getGenreDropdown($filter, $selectedGenre)
 		{
 			$Genres = \EventManager\Models\GenreDbModel::readAll();
 			?>
@@ -237,11 +276,12 @@
 			?>
 				<option value='0'>-- All -- </option>
 			<?php
-				}
-				foreach($Genres as $Genre)
-				{
-					echo "<option value=". $Genre->getId() .">". $Genre->getName() ."</option>" . PHP_EOL;	
-				}	
+			}
+			foreach($Genres as $Genre)
+			{
+				$selected = $Genre->getId() == $selectedGenre ? "selected" : "";
+				echo "<option value='". $Genre->getId() ."' " . $selected . ">". $Genre->Name .  "</option>" . PHP_EOL;	
+			}	
 			?>
 			</select>
 			<?php
@@ -277,6 +317,9 @@
 			return $Form;
 		}
 		
+		/**
+		* Methode zur Anzeige der Links der Events in editierbarer Form
+		*/
 		public static function getLinksTextboxes($Links, $idEvent)
 		{
 			$Form = "";
@@ -295,10 +338,14 @@
 		}
 			
 		
-		public static function showFilterGenre($Page, $archive)
+		/*
+		*	Methode zur Anzeige des Filters für Genres
+		*/
+		public static function showFilterGenre($Page, $archive, $selectedGenre)
 		{
 			$link = "index.php?site=";
 			
+			// stellt den Link zusammen, um richtig zu filtern (hängt ab, ob archiviert oder nicht)
 			if($archive)
 			{
 				$link .= "archive&page=" . $Page;
@@ -310,13 +357,15 @@
 			?>
 			<form method="post" action="<?php echo $link; ?>">
 				<?php
-					self::getGenreDropdown(true);
+					self::getGenreDropdown(true, $selectedGenre);
 				?>
 				<input class='btn btn-default' type='submit' name='submit' value='Filtern'>
 			</form>
 			<?php
 		}	
-		
+		/**
+		*	generieren des Filters
+		*/
 		public static function generateFilter($currentPage, $orderBy, $orderByDirection, $archive, $genre)
 		{
 			$Endpoint = 0;
@@ -345,6 +394,9 @@
 			return $EventForm;
 		}
 		
+		/*
+		* Funktion zum Erstellen eines Events
+		*/
 		public static function create($Name, $Besetzung, $Beschreibung, $Dauer, $idGenre)
 		{
 			$Event = new \EventManager\BusinessObjects\Event(0, $Name, $Beschreibung, $Besetzung, $Dauer, "", "", $idGenre, "", "");
@@ -353,6 +405,9 @@
 			return $createSuccessfull;
 		}
 
+		/**
+		* Funktion zum Updaten der Preisgruppen eines Events
+		*/
 		public static function updatePricegroupsFromEvent($selectedPricegroups, $idEvent)
 		{
 			\EventManager\Models\PriceGroupsDbModel::delete(0, $idEvent);
@@ -369,7 +424,7 @@
 		}
 		
 		/**
-		* Funktion zum Updaten der Events
+		* Funktion zum Updaten der Links eines Events
 		*/
 		public static function updateLinksFromEvent($links, $names, $idEvent)
 		{

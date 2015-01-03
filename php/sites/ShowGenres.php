@@ -40,7 +40,7 @@
 		}
 		else
 		{
-			$GenreForm->showMessage("danger", "Genre löschen nicht erfolgreich", "Das Genre konnte nicht gelöscht werden.<br>");
+			$GenreForm->showMessage("danger", "Genre löschen nicht erfolgreich", "Das Genre konnte nicht gelöscht werden. Vermutlich ist es bereits einer Veranstaltung zugeordnet.<br>");
 		}
 	}
 	

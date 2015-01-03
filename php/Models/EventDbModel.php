@@ -92,9 +92,10 @@
 													"bildbeschreibung = ?, " .
 													"bild = ?, " .
 													"besetzung = ?, " .
+													"dauer = ?, " . 
 													"idgenre = ? " .
 									   "WHERE id = ?");
-			$stmt->bind_param("sssssii", $Event->Name, $Event->Description, $Event->PictureDescription, $Event->PicturePath, $Event->Persons, $Event->idGenre, $Event->idEvent);
+			$stmt->bind_param("ssssssii", $Event->Name, $Event->Description, $Event->PictureDescription, $Event->PicturePath, $Event->Persons, $Event->Duration, $Event->idGenre,  $Event->idEvent);
 			
 			$successUpdate = $stmt->execute();
 			

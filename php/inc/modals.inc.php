@@ -28,7 +28,7 @@
 				<div class="modal-body">
 					<form action="index.php?site=sign" method="post" role="form">
 					<?php
-						\EventManager\EventManager::getGenreDropdown(false);
+						\EventManager\EventManager::getGenreDropdown(false, 0);
 					?>
 				</div>
 				<div class="modal-footer">

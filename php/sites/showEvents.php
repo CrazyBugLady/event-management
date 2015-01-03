@@ -34,6 +34,6 @@
 		EventManager\EventManager::updatePricegroupsFromEvent($_REQUEST["pricegroups"], $idEvent);
 	}
 	
-	EventManager\EventManager::showEvents($currentPage, $User, false, $Genre);
+	EventManager\EventManager::showEvents($currentPage, $User, false, $Genre, $idEvent);
 			
 ?>
